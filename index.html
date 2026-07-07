@@ -34,7 +34,9 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .tab-btn:hover { background-color: #ff4d6d; }
+        .tab-btn:hover, .tab-btn.active { 
+            background-color: #ff4d6d; 
+        }
         
         /* Content Sections */
         .content-section {
@@ -45,25 +47,130 @@
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
+
+        /* Hide sections by default */
+        .hidden {
+            display: none;
+        }
+
+        /* Secret Letter Buttons Styling */
+        .letter-envelope {
+            background-color: #ffe5ec;
+            border: 2px dashed #ff4d6d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #ff4d6d;
+            transition: 0.2s;
+        }
+        .letter-envelope:hover {
+            background-color: #ffb3c1;
+            color: white;
+        }
+
+        /* Actual Letter Text Styling */
+        .letter-content {
+            display: none;
+            background: #fffdf9;
+            border-left: 4px solid #ff4d6d;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: left;
+            font-style: italic;
+            line-height: 1.6;
+            white-space: pre-line; /* Keeps your text line breaks */
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>Happy Birthday to YOUUU Lilou 🎂(choco)</h1>
-        <p>I made this simple coding just for you so.. low expectation please :pray: </p>
+        <p>I made this simple coding just for you so.. low expectation please 🙏 </p>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn">SECETS Letters</button>
-        <button class="tab-btn">Photosss</button>
-        <button class="tab-btn">Birthday Puzzle!!</button>
+        <button class="tab-btn" onclick="showSection('letters')">SECETS Letters</button>
+        <button class="tab-btn" onclick="showSection('photos')">Photosss</button>
+        <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
     </div>
 
-    <div class="content-section">
+    <div id="home-section" class="content-section">
         <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
         <p>Take your time exploring each one.(super pls)</p>
     </div>
+
+    <div id="letters-section" class="content-section hidden">
+        <h3>💌 Your Secret Letters</h3>
+        <p>Click an envelope to open it!</p>
+
+        <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
+        <div id="letter1" class="letter-content">
+            Dear Lilou,
+            
+            [Type your 1st secret letter message here...]
+        </div>
+
+        <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
+        <div id="letter2" class="letter-content">
+            Hey choco,
+            
+            [Type your 2nd secret letter message here...]
+        </div>
+
+        <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
+        <div id="letter3" class="letter-content">
+            Silly baby,
+            
+            [Type your 3rd secret letter message here...]
+        </div>
+
+        <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
+        <div id="letter4" class="letter-content">
+            My favorite person,
+            
+            [Type your 4th secret letter message here...]
+        </div>
+
+        <div class="letter-envelope" onclick="toggleLetter('letter5')">✉️ Secret Letter #5</div>
+        <div id="letter5" class="letter-content">
+            Happy Birthday,
+            
+            [Type your 5th secret letter message here...]
+        </div>
+    </div>
+
+    <div id="photos-section" class="content-section hidden">
+        <h3>📸 Photosss Coming Soon</h3>
+        <p>This is where we will add our favorite memories next!</p>
+    </div>
+
+    <div id="puzzle-section" class="content-section hidden">
+        <h3>🧩 Puzzle Coming Soon</h3>
+        <p>Get ready to solve a little birthday game here!</p>
+    </div>
+
+    <script>
+        function showSection(sectionName) {
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('letters-section').classList.add('hidden');
+            document.getElementById('photos-section').classList.add('hidden');
+            document.getElementById('puzzle-section').classList.add('hidden');
+
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+        }
+
+        function toggleLetter(letterId) {
+            var letter = document.getElementById(letterId);
+            if (letter.style.display === "block") {
+                letter.style.display = "none";
+            } else {
+                letter.style.display = "block";
+            }
+        }
+    </script>
 
 </body>
 </html>
