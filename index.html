@@ -3,41 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
+    <title>For My silly baby</title>
     <style>
         body {
-            background: linear-gradient(135deg, #ffe4e1, #ffffff);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        h1 {
-            font-size: 2.5rem;
-            color: #ff477e;
+            background-color: #fff5f5;
+            font-family: 'Arial', sans-serif;
             text-align: center;
+            margin: 0;
+            padding: 20px;
         }
-        .heart {
-            font-size: 4rem;
-            color: #ff477e;
-            animation: pulse 1.2s infinite;
+        .header {
+            padding: 40px 20px;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+        h1 { color: #ff4d6d; }
+        
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .tab-btn {
+            background-color: #ffb3c1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn:hover { background-color: #ff4d6d; }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
 
-    <div class="heart">❤️</div>
-    <h1>Happy Birthday to the most amazing girl!</h1>
-    <p>This website is being built entirely from scratch just for you. Stay tuned...</p>
+    <div class="header">
+        <h1>Happy Birthday, Beautiful! 🎂</h1>
+        <p>I made this little space just for you.</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn">Our Letters</button>
+        <button class="tab-btn">Our Memories</button>
+        <button class="tab-btn">Birthday Puzzle</button>
+    </div>
+
+    <div class="content-section">
+        <h3>Select a tab above to unlock your birthday gifts!</h3>
+        <p>Take your time exploring each one.</p>
+    </div>
 
 </body>
 </html>
