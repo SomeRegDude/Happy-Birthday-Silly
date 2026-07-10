@@ -201,21 +201,19 @@
             position: relative;
         }
 
-        /* Container for the viral Typographic Text-Heart */
-        #textHeartContainer {
-            font-family: monospace;
-            font-size: 7px;
-            line-height: 5.5px;
-            white-space: pre;
-            color: #ff4d6d;
-            text-align: center;
+        /* Container for the bouncing/painting text canvas heart */
+        #canvasHeartWrapper {
+            position: relative;
+            width: 320px;
+            height: 280px;
             margin-bottom: 20px;
-            letter-spacing: 1px;
-            font-weight: bold;
-            min-height: 240px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: transparent;
+        }
+        #paintingCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
 
         /* Main Screen Interactive Candle */
@@ -225,6 +223,7 @@
             width: 60px;
             height: 120px;
             margin: 10px auto;
+            z-index: 2;
         }
         .candle-stick {
             width: 20px;
@@ -491,12 +490,13 @@ To finally finish and open your last gift, you need to answer this riddle:
         </div>
     </div>
 
-    <!-- 5. SUPER SECRET ACTIVE VIEW (WITH VIRAL TEXT SHAPE HEART) -->
+    <!-- 5. SUPER SECRET ACTIVE VIEW (BOUNCING PAINTING CANVAS ENGINE) -->
     <div id="secret-section" class="content-section hidden">
         <div class="super-secret-container">
             
-            <!-- This container will render the heart formed of "I Love You" repeating text dynamically -->
-            <div id="textHeartContainer"></div>
+            <div id="canvasHeartWrapper">
+                <canvas id="paintingCanvas"></canvas>
+            </div>
             
             <h2 style="color: #ff4d6d; margin: 5px 0 0 0;">happy birthday, baby</h2>
             
@@ -515,7 +515,7 @@ To finally finish and open your last gift, you need to answer this riddle:
 
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
-        let typographicLoopInterval = null;
+        let kineticHeartAnimId = null;
 
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
@@ -582,10 +582,10 @@ To finally finish and open your last gift, you need to answer this riddle:
             document.getElementById('puzzle-section').classList.add('hidden');
             document.getElementById('secret-section').classList.add('hidden');
             
-            // Clean up intervals safely when navigating away
-            if (typographicLoopInterval) {
-                clearInterval(typographicLoopInterval);
-                typographicLoopInterval = null;
+            // Turn off canvas draw rendering loops smoothly when leaving
+            if (kineticHeartAnimId) {
+                cancelAnimationFrame(kineticHeartAnimId);
+                kineticHeartAnimId = null;
             }
 
             document.getElementById(sectionName + '-section').classList.remove('hidden');
@@ -598,7 +598,7 @@ To finally finish and open your last gift, you need to answer this riddle:
             if(sectionName === 'puzzle') {
                 initPuzzle();
             } else if (sectionName === 'secret') {
-                initTypographicHeart();
+                startBouncingPaintHeart();
             }
         }
 
@@ -771,53 +771,87 @@ To finally finish and open your last gift, you need to answer this riddle:
         }
 
         // =====================================================================
-        // VIRAL TIKTOK TYPOGRAPHIC "I LOVE YOU" HEART DRAW ENGINE
+        // KINETIC BOUNCING/PAINTING TEXT HEART ENGINE
         // =====================================================================
-        function initTypographicHeart() {
-            const container = document.getElementById('textHeartContainer');
-            container.innerHTML = ''; // reset
+        function startBouncingPaintHeart() {
+            const canvas = document.getElementById('paintingCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = 320;
+            canvas.height = 280;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const message = "ILOVEYOU";
-            let charIndex = 0;
+            const phrase = "ILOVEYOU";
+            const targetCoordinates = [];
             
-            // Generate full geometric math data grid
-            let finalHeartText = "";
-            
-            // Loop through y and x coordinate planes to evaluate the algebraic formula
-            for (let y = 12; y >= -12; y -= 0.5) {
-                let rowText = "";
-                for (let x = -26; x <= 26; x += 0.5) {
-                    // Core heart equation mapping system calculation: (x^2 + y^2 - 1)^3 - x^2 * y^3 <= 0
+            // Build the mathematical look-up reference map array
+            for (let y = 12; y >= -12; y -= 0.4) {
+                for (let x = -26; x <= 26; x += 0.4) {
                     const valX = x * 0.05;
                     const valY = y * 0.1;
                     const formula = Math.pow(valX*valX + valY*valY - 1, 3) - valX*valX * Math.pow(valY, 3);
                     
                     if (formula <= 0) {
-                        // Point inside heart boundary - inject repeating message characters
-                        rowText += message[charIndex % message.length];
-                        charIndex++;
-                    } else {
-                        // Point outside heart layout - add spacing empty block
-                        rowText += " ";
+                        // Project mathematical bounds coordinates cleanly into canvas scale space
+                        const screenX = canvas.width / 2 + (x * 5.8);
+                        const screenY = canvas.height / 2 - (y * 10);
+                        targetCoordinates.push({ x: screenX, y: screenY, printed: false });
                     }
                 }
-                finalHeartText += rowText + "\n";
             }
 
-            // Viral typing animation reveal loop implementation
-            let currentLength = 0;
-            container.innerText = "";
-            
-            // Speeds up typing rendering gracefully to minimize browser rendering stutters
-            typographicLoopInterval = setInterval(() => {
-                if (currentLength < finalHeartText.length) {
-                    // Type chunks of characters at a single clock step to make the build clean
-                    currentLength += 15; 
-                    container.innerText = finalHeartText.substring(0, currentLength);
-                } else {
-                    clearInterval(typographicLoopInterval);
-                }
-            }, 10);
+            // Create two active structural kinetic pointer text objects
+            const bouncers = [
+                { x: 20, y: 30, vx: 3.5, vy: 2.2, text: "I Love You", phraseIndex: 0 },
+                { x: 300, y: 240, vx: -2.8, vy: -3.1, text: "I Love You", phraseIndex: 3 }
+            ];
+
+            function runKineticLoop() {
+                // Paint step 1: Check proximity of bouncers to lay down trailing characters
+                bouncers.forEach(b => {
+                    b.x += b.vx;
+                    b.y += b.vy;
+
+                    // Standard edge bounce conditions
+                    if (b.x < 10 || b.x > canvas.width - 60) b.vx *= -1;
+                    if (b.y < 15 || b.y > canvas.height - 15) b.vy *= -1;
+
+                    // Match adjacent look-up maps and imprint characters directly
+                    targetCoordinates.forEach(pt => {
+                        if (!pt.printed) {
+                            const distance = Math.hypot(b.x - pt.x, b.y - pt.y);
+                            if (distance < 18) { // Paint trigger threshold radius
+                                pt.printed = true;
+                                ctx.font = "bold 8px monospace";
+                                ctx.fillStyle = "#ff4d6d";
+                                // Choose continuous rotating characters cleanly
+                                const charToPrint = phrase[pt.phraseIndex % phrase.length];
+                                ctx.fillText(charToPrint, pt.x, pt.y);
+                                pt.phraseIndex = (pt.phraseIndex || 0) + 1;
+                            }
+                        }
+                    });
+                });
+
+                // Paint step 2: Draw the two floating interactive pointer texts over the top layer
+                // We wipe the canvas background with a tiny translucent frame layer every frame *ONLY* where the floating words are, or just clear the trail context cleanly by redrawing the text elements dynamically on top.
+                
+                // To keep the trail permanent but the words moving, we draw the moving words, but we don't clear the full canvas!
+                // To prevent the words from leaving a fat solid white blur, we simply draw them as bright neon pointers.
+                bouncers.forEach(b => {
+                    ctx.fillStyle = "#fff5f5";
+                    ctx.fillRect(b.x - 2, b.y - 10, 65, 14); // clear previous text block frame
+                    
+                    ctx.font = "bold 11px Arial";
+                    ctx.fillStyle = "#9a4858";
+                    ctx.fillText(b.text, b.x, b.y);
+                });
+
+                kineticHeartAnimId = requestAnimationFrame(runKineticLoop);
+            }
+
+            runKineticLoop();
         }
     </script>
 </body>
