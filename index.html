@@ -48,12 +48,9 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        /* Hide sections by default */
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
 
-        /* Secret Letter Buttons Styling */
+        /* Secret Letter Styling */
         .letter-envelope {
             background-color: #ffe5ec;
             border: 2px dashed #ff4d6d;
@@ -63,14 +60,7 @@
             cursor: pointer;
             font-weight: bold;
             color: #ff4d6d;
-            transition: 0.2s;
         }
-        .letter-envelope:hover {
-            background-color: #ffb3c1;
-            color: white;
-        }
-
-        /* Actual Letter Text Styling */
         .letter-content {
             display: none;
             background: #fffdf9;
@@ -80,7 +70,45 @@
             text-align: left;
             font-style: italic;
             line-height: 1.6;
-            white-space: pre-line; /* Keeps your text line breaks */
+            white-space: pre-line;
+        }
+
+        /* 6x6 PUZZLE ENGINE STYLING */
+        #puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(6, 50px);
+            grid-template-rows: repeat(6, 50px);
+            gap: 1px;
+            justify-content: center;
+            background-color: #ffb3c1;
+            padding: 5px;
+            border-radius: 10px;
+            width: 305px;
+            margin: 20px auto;
+        }
+        .tile {
+            width: 50px;
+            height: 50px;
+            background-image: url('puzzle.jpg');
+            background-size: 300px 300px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.1s;
+        }
+        .tile.empty {
+            background-image: none !important;
+            background-color: #fff5f5;
+            cursor: default;
+        }
+        #win-message {
+            display: none;
+            color: #ff4d6d;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            background: #ffe5ec;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -105,41 +133,16 @@
     <div id="letters-section" class="content-section hidden">
         <h3>💌 Your Secret Letters</h3>
         <p>Click an envelope to open it!</p>
-
         <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
-        <div id="letter1" class="letter-content">
-            Dear Lilou,
-            
-            [Type your 1st secret letter message here...]
-        </div>
-
+        <div id="letter1" class="letter-content">Dear Lilou,\n\n[Type message 1 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
-        <div id="letter2" class="letter-content">
-            Hey choco,
-            
-            [Type your 2nd secret letter message here...]
-        </div>
-
+        <div id="letter2" class="letter-content">Hey choco,\n\n[Type message 2 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
-        <div id="letter3" class="letter-content">
-            Silly baby,
-            
-            [Type your 3rd secret letter message here...]
-        </div>
-
+        <div id="letter3" class="letter-content">Silly baby,\n\n[Type message 3 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
-        <div id="letter4" class="letter-content">
-            My favorite person,
-            
-            [Type your 4th secret letter message here...]
-        </div>
-
+        <div id="letter4" class="letter-content">My favorite person,\n\n[Type message 4 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter5')">✉️ Secret Letter #5</div>
-        <div id="letter5" class="letter-content">
-            Happy Birthday,
-            
-            [Type your 5th secret letter message here...]
-        </div>
+        <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
     </div>
 
     <div id="photos-section" class="content-section hidden">
@@ -148,8 +151,16 @@
     </div>
 
     <div id="puzzle-section" class="content-section hidden">
-        <h3>🧩 Puzzle Coming Soon</h3>
-        <p>Get ready to solve a little birthday game here!</p>
+        <h3>🧩 Solve the 6x6 Master Puzzle to unlock your message!</h3>
+        <p>Click pieces next to the empty space to slide them.</p>
+        
+        <div id="puzzle-container"></div>
+        <button class="tab-btn" onclick="scramblePuzzle()" style="margin-top:10px;">Scramble Again</button>
+        
+        <div id="win-message">
+            🎉 YOU DID IT CHOCO! 🎉<br>
+            "Happy Birthday! You just solved my messy code puzzle. Your real gift is hidden in the living room drawer!" *(Or write whatever surprise message you want here!)*
+        </div>
     </div>
 
     <script>
@@ -158,19 +169,88 @@
             document.getElementById('letters-section').classList.add('hidden');
             document.getElementById('photos-section').classList.add('hidden');
             document.getElementById('puzzle-section').classList.add('hidden');
-
             document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            if(sectionName === 'puzzle') { initPuzzle(); }
         }
 
         function toggleLetter(letterId) {
             var letter = document.getElementById(letterId);
-            if (letter.style.display === "block") {
-                letter.style.display = "none";
-            } else {
-                letter.style.display = "block";
+            letter.style.display = (letter.style.display === "block") ? "none" : "block";
+        }
+
+        // 6x6 PUZZLE LOGIC
+        const GRID_SIZE = 6;
+        const TILE_COUNT = GRID_SIZE * GRID_SIZE;
+        const EMPTY_INDEX = TILE_COUNT - 1; // 35 is the empty slot
+
+        let tiles = [];
+        let correctOrder = [];
+
+        // Generate arrays dynamically for 6x6
+        for (let i = 0; i < TILE_COUNT; i++) {
+            tiles.push(i);
+            correctOrder.push(i);
+        }
+
+        function initPuzzle() {
+            scramblePuzzle();
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            const container = document.getElementById('puzzle-container');
+            container.innerHTML = '';
+            
+            tiles.forEach((tileIdx, currentPos) => {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                
+                if (tileIdx === EMPTY_INDEX) {
+                    tile.classList.add('empty');
+                } else {
+                    const row = Math.floor(tileIdx / GRID_SIZE);
+                    const col = tileIdx % GRID_SIZE;
+                    // Move background position by 50px segments
+                    tile.style.backgroundPosition = `-${col * 50}px -${row * 50}px`;
+                    tile.onclick = () => moveTile(currentPos);
+                }
+                container.appendChild(tile);
+            });
+            checkWin();
+        }
+
+        function scramblePuzzle() {
+            document.getElementById('win-message').style.display = 'none';
+            // Shuffle array
+            for (let i = tiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+            }
+            renderPuzzle();
+        }
+
+        function moveTile(pos) {
+            const emptyPos = tiles.indexOf(EMPTY_INDEX);
+            const validMoves = [];
+            
+            if (pos % GRID_SIZE > 0) validMoves.push(pos - 1);         // Left
+            if (pos % GRID_SIZE < GRID_SIZE - 1) validMoves.push(pos + 1); // Right
+            if (pos > GRID_SIZE - 1) validMoves.push(pos - GRID_SIZE);     // Up
+            if (pos < TILE_COUNT - GRID_SIZE) validMoves.push(pos + GRID_SIZE); // Down
+
+            if (validMoves.includes(emptyPos)) {
+                [tiles[pos], tiles[emptyPos]] = [tiles[emptyPos], tiles[pos]];
+                renderPuzzle();
+            }
+        }
+
+        function checkWin() {
+            const isWin = tiles.every((val, idx) => val === correctOrder[idx]);
+            if (isWin && document.getElementById('puzzle-container').innerHTML !== '') {
+                document.getElementById('win-message').style.display = 'block';
             }
         }
     </script>
-
 </body>
 </html>
