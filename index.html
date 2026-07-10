@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My silly baby</title>
     <style>
+        /* Base Setup & Background Hearts */
         body {
             background-color: #fff5f5;
             font-family: 'Arial', sans-serif;
@@ -12,13 +13,136 @@
             margin: 0;
             padding: 20px;
             user-select: none;
+            overflow-x: hidden;
+            position: relative;
         }
-        .header {
-            padding: 40px 20px;
+
+        /* CSS Heart Background Animation System */
+        .background-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
         }
+        .bg-heart {
+            position: absolute;
+            bottom: -50px;
+            background-color: rgba(255, 77, 109, 0.15);
+            display: inline-block;
+            height: 30px;
+            margin: 0 10px;
+            transform: rotate(-45deg);
+            width: 30px;
+            animation: floatUp 10s linear infinite;
+        }
+        .bg-heart:before, .bg-heart:after {
+            content: "";
+            background-color: rgba(255, 77, 109, 0.15);
+            border-radius: 50%;
+            height: 30px;
+            position: absolute;
+            width: 30px;
+        }
+        .bg-heart:before { top: -15px; left: 0; }
+        .bg-heart:after { left: 15px; top: 0; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(-45deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-105vh) rotate(-45deg); opacity: 0; }
+        }
+
+        /* Candle Landing Overlay Screen */
+        #candle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #fff5f5;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+        .candle-container {
+            cursor: pointer;
+            position: relative;
+            width: 60px;
+            height: 140px;
+        }
+        .candle-stick {
+            width: 24px;
+            height: 80px;
+            background: #ffb3c1;
+            border-radius: 4px;
+            position: absolute;
+            bottom: 0;
+            left: 18px;
+        }
+        .candle-wick {
+            width: 2px;
+            height: 12px;
+            background: #444;
+            position: absolute;
+            top: 48px;
+            left: 29px;
+        }
+        .candle-flame {
+            width: 16px;
+            height: 26px;
+            background: #ffb703;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: 24px;
+            left: 22px;
+            box-shadow: 0 0 15px #ffb703;
+            animation: flicker 0.1s ease-in-out infinite alternate;
+        }
+        @keyframes flicker {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08) rotate(2deg); }
+        }
+
+        /* Unserious Emoji Confetti */
+        .confetti-emoji {
+            position: fixed;
+            font-size: 2rem;
+            z-index: 2001;
+            pointer-events: none;
+            animation: scatter 1.2s ease-out forwards;
+        }
+        @keyframes scatter {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
+        }
+
+        /* Bottom Right Custom Date Stamp */
+        .footer-date-stamp {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ff4d6d;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 10px;
+            border-radius: 10px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Original App CSS Structure */
+        .header { padding: 40px 20px; }
         h1 { color: #ff4d6d; }
         
-        /* Navigation Tabs */
         .tabs {
             display: flex;
             justify-content: center;
@@ -35,11 +159,8 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .tab-btn:hover, .tab-btn.active { 
-            background-color: #ff4d6d; 
-        }
+        .tab-btn:hover, .tab-btn.active { background-color: #ff4d6d; }
         
-        /* Content Sections */
         .content-section {
             background: white;
             max-width: 700px;
@@ -48,10 +169,8 @@
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-
         .hidden { display: none; }
 
-        /* Secret Letter Styling */
         .letter-envelope {
             background-color: #ffe5ec;
             border: 2px dashed #ff4d6d;
@@ -74,7 +193,6 @@
             white-space: pre-line;
         }
 
-        /* Password Field Styling */
         .password-gate {
             display: none;
             background: #fffdf9;
@@ -91,9 +209,7 @@
             font-size: 0.9rem;
             text-align: center;
         }
-        .pw-input:focus {
-            border-color: #ff4d6d;
-        }
+        .pw-input:focus { border-color: #ff4d6d; }
         .pw-btn {
             background-color: #ff4d6d;
             color: white;
@@ -104,7 +220,6 @@
             margin-left: 5px;
         }
 
-        /* DYNAMIC PHOTOS GRID GALLERY */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -121,50 +236,23 @@
             border: 2px solid transparent;
             transition: transform 0.2s, border-color 0.2s;
         }
-        .photo-card:hover {
-            transform: scale(1.03);
-            border-color: #ffb3c1;
-        }
-        .photo-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .photo-card:hover { transform: scale(1.03); border-color: #ffb3c1; }
+        .photo-card img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* LIGHTBOX IMAGE POPUP OVERLAY */
         .lightbox {
             display: none;
             position: fixed;
-            z-index: 999;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            z-index: 2999;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.85);
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
         }
-        .lightbox-content {
-            max-width: 90%;
-            max-height: 80%;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2.5rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .lightbox-content { max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2.5rem; font-weight: bold; cursor: pointer; }
 
-        /* SELF-CONTAINED JIGSAW PUZZLE WORKSPACE */
         #puzzle-board {
             position: relative;
-            width: 500px;
-            height: 500px;
+            width: 500px; height: 500px;
             margin: 20px auto;
             background: #fafafa;
             border: 2px dashed #ffb3c1;
@@ -173,34 +261,39 @@
         }
         .puzzle-piece {
             position: absolute;
-            width: 100px; 
-            height: 100px; 
+            width: 100px; height: 100px; 
             background-image: url('puzzle.jpg');
             background-size: 500px 500px;
             cursor: grab;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.4);
-            transition: box-shadow 0.1s;
             z-index: 2;
         }
-        .puzzle-piece:active {
-            cursor: grabbing;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            z-index: 10;
-        }
+        .puzzle-piece:active { cursor: grabbing; box-shadow: 0 5px 15px rgba(0,0,0,0.4); z-index: 10; }
         #win-message {
-            display: none;
-            color: #ff4d6d;
-            font-size: 1.2rem;
-            margin-top: 15px;
-            background: #ffe5ec;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
+            display: none; color: #ff4d6d; font-size: 1.2rem; margin-top: 15px;
+            background: #ffe5ec; padding: 15px; border-radius: 8px; font-weight: bold;
         }
     </style>
 </head>
 <body>
+
+    <!-- FALLING HEART ANIMATION BACKGROUND WRAPPER -->
+    <div class="background-hearts" id="heartsContainer"></div>
+
+    <!-- CANDLE INTERACTIVE BLOWOUT OVERLAY SYSTEM -->
+    <div id="candle-overlay">
+        <h2 style="color: #ff4d6d; margin-bottom: 5px;">Make a wish... 🥺</h2>
+        <p style="color: #666; margin-bottom: 30px; font-size: 0.9rem;">(Click the flame to blow out the candle)</p>
+        <div class="candle-container" onclick="blowCandle(event)">
+            <div class="candle-flame" id="flame"></div>
+            <div class="candle-wick"></div>
+            <div class="candle-stick"></div>
+        </div>
+    </div>
+
+    <!-- DATE STAMP FIXED AT THE BOTTOM RIGHT -->
+    <div class="footer-date-stamp">07/11/2026</div>
 
     <div class="header">
         <h1>Happy Birthday to YOUUU Lilou 🎂(choco)</h1>
@@ -247,7 +340,7 @@ I want you to know how deeply I love you. There really isn't a limit to the leng
 Enjoy your day, your cake, the mall, and remember that I’m always in your corner, cheering you on. This is just the beginning of the things I want to do for you.</div>
         
         <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
-        <div id="letter4" class="letter-content">Dear Rhiane,
+        <div id="letter3" class="letter-content">Dear Rhiane,
 
 This letter is a serious one, because I want to make sure you know exactly where my head and my heart are at. (with very serious monotone)
 
@@ -270,7 +363,15 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             <button class="pw-btn" onclick="checkLetterPassword()">Unlock</button>
             <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
         </div>
-        <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
+        <!-- UPDATED VALUE INSIDE THE 5TH LETTER SYSTEM -->
+        <div id="letter5" class="letter-content">Happy birthday, baby ❤️
+
+To finally finish and open your last gift, you need to answer this riddle:
+
+"I gloom into the silence for you to have to go tonight, why must time be a bitch at the worst seconds. I grithed my teeth and showed no mercy for I went to the end of the story to write a misery. It was a punishment for you to do, I hope THIS reminds you of me everytime you go."
+
+The secret inside code is: Star
+(Keep in mind that the first letter is capitalized!)</div>
     </div>
 
     <!-- 3. PHOTOS SECTION -->
@@ -279,7 +380,6 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
         <p>Click any photo to open it full size or not....this is embarassing AAa</p>
         
         <div class="photo-grid">
-            <!-- Automatically hooks up all 41 sequentially named photo files -->
             <div class="photo-card" onclick="openLightbox(this)"><img src="photo (1).jpg" alt="Memory 1"></div>
             <div class="photo-card" onclick="openLightbox(this)"><img src="photo (2).jpg" alt="Memory 2"></div>
             <div class="photo-card" onclick="openLightbox(this)"><img src="photo (3).jpg" alt="Memory 3"></div>
@@ -345,8 +445,56 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
+    <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
+        // BACKGROUND HEART CREATOR ENGINE
+        function initHeartsBackground() {
+            const container = document.getElementById('heartsContainer');
+            const heartCount = 25; 
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 8 + 's';
+                const sizeScale = 0.4 + Math.random() * 0.8;
+                heart.style.transform = `scale(${sizeScale}) rotate(-45deg)`;
+                container.appendChild(heart);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', initHeartsBackground);
+
+        // INTERACTIVE CANDLE & CONFETTI ENGINE
+        function blowCandle(event) {
+            document.getElementById('flame').style.display = 'none';
+            
+            // Generate unserious emoji confetti particles
+            const emojis = ['🎉', '✨', '💖', '🧁', '🍰', '🌸'];
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-emoji';
+                confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                confetti.style.left = event.clientX + 'px';
+                confetti.style.top = event.clientY + 'px';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 100 + Math.random() * 200;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                confetti.style.setProperty('--x', `${x}px`);
+                confetti.style.setProperty('--y', `${y}px`);
+                
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 1200);
+            }
+
+            // Cleanly fade away the landing cover
+            const overlay = document.getElementById('candle-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 1000);
+        }
+
+        // NAVIGATION SYSTEM
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
             document.getElementById('letters-section').classList.add('hidden');
@@ -364,7 +512,6 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        // PASSWORD SECURITY FOR LETTER 5
         function togglePasswordGate() {
             var gate = document.getElementById('letter5-gate');
             var letter = document.getElementById('letter5');
@@ -384,7 +531,7 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             const letter = document.getElementById('letter5');
             const gate = document.getElementById('letter5-gate');
 
-            const correctPassword = "sillychoco"; 
+            const correctPassword = "07112011"; 
 
             if (userInput === correctPassword) {
                 gate.style.display = "none"; 
@@ -395,7 +542,6 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             }
         }
 
-        // LIGHTBOX INTERACTION LOGIC
         function openLightbox(element) {
             const imgSrc = element.querySelector('img').src;
             document.getElementById('lightboxImg').src = imgSrc;
@@ -406,7 +552,7 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             document.getElementById('lightboxOverlay').style.display = 'none';
         }
 
-        // NATIVE 5x5 DRAG-AND-DROP JIGSAW ENGINE
+        // JIGSAW PUZZLE CONFIG
         const rows = 5;
         const cols = 5;
         const pieceSize = 100; 
