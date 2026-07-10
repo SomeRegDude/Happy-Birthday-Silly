@@ -87,8 +87,8 @@
         }
         .puzzle-piece {
             position: absolute;
-            width: 125px;
-            height: 125px;
+            width: 100px; /* Adjusted to perfectly match 5x5 layout */
+            height: 100px; /* Adjusted to perfectly match 5x5 layout */
             background-image: url('puzzle.jpg.png');
             background-size: 500px 500px;
             cursor: grab;
@@ -155,10 +155,10 @@
 
     <!-- 4. PUZZLE SECTION -->
     <div id="puzzle-section" class="content-section hidden">
-        <h3>🧩 Drag and pieces back to their correct spots!</h3>
+        <h3>🧩 Drag the pieces back to their correct spots!</h3>
         <p>They will auto-snap and stick cleanly when you get them close enough.</p>
         
-        <div id="puzzle-board" id="board"></div>
+        <div id="puzzle-board"></div>
         
         <button class="tab-btn" onclick="initPuzzle()" style="margin-top:10px;">Scramble / Reset</button>
 
@@ -187,17 +187,15 @@
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        // NATIVE DRAG-AND-DROP JIGSAW ENGINE
-        const rows = 4;
-        const cols = 4;
-        const pieceSize = 125; // 500px board / 4 pieces = 125px each
+        // UPDATED NATIVE 5x5 DRAG-AND-DROP JIGSAW ENGINE
+        const rows = 5;
+        const cols = 5;
+        const pieceSize = 100; // 500px board / 5 pieces = 100px each
 
         function initPuzzle() {
             const board = document.getElementById('puzzle-board');
             board.innerHTML = ''; 
             document.getElementById('win-message').style.display = 'none';
-
-            let pieces = [];
 
             // Generate puzzle grid pieces
             for (let r = 0; r < rows; r++) {
@@ -287,8 +285,8 @@
                 const correctX = parseFloat(piece.dataset.correctX);
                 const correctY = parseFloat(piece.dataset.correctY);
 
-                // Check distance target closeness. If close within 25px tolerance, clean snap!
-                if (Math.abs(xOffset - correctX) < 25 && Math.abs(yOffset - correctY) < 25) {
+                // Check distance target closeness. If close within 20px tolerance, clean snap!
+                if (Math.abs(xOffset - correctX) < 20 && Math.abs(yOffset - correctY) < 20) {
                     piece.style.left = correctX + 'px';
                     piece.style.top = correctY + 'px';
                     xOffset = correctX;
