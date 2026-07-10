@@ -96,7 +96,8 @@
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/gh/gorhill/jigsawpuzzle-rhill@master/jigsawpuzzle.js"></script>
+    <!-- Alternative Stable Script Delivery Method -->
+    <script src="https://unpkg.com/gorhill-jigsawpuzzle@1.0.1/jigsawpuzzle.js"></script>
 </head>
 <body>
 
@@ -111,11 +112,13 @@
         <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
     </div>
 
+    <!-- 1. HOME SECTION -->
     <div id="home-section" class="content-section">
         <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
         <p>Take your time exploring each one.(super pls)</p>
     </div>
 
+    <!-- 2. SECRETS LETTERS SECTION -->
     <div id="letters-section" class="content-section hidden">
         <h3>💌 Your Secret Letters</h3>
         <p>Click an envelope to open it!</p>
@@ -131,11 +134,13 @@
         <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
     </div>
 
+    <!-- 3. PHOTOS SECTION -->
     <div id="photos-section" class="content-section hidden">
         <h3>📸 Photosss Coming Soon</h3>
         <p>This is where we will add our favorite memories next!</p>
     </div>
 
+    <!-- 4. PUZZLE SECTION -->
     <div id="puzzle-section" class="content-section hidden">
         <h3>🧩 Drag and drop the pieces to finish the Jigsaw!</h3>
         <p>Match the interlocking edges together.</p>
@@ -146,10 +151,11 @@
 
         <div id="win-message">
             🎉 YOU DID IT CHOCO! 🎉<br>
-            "Happy Birthday! You just solved my messy code puzzle. Your real gift is hidden in the living room drawer!" *(Or write whatever surprise message you want here!)*
+            "Happy Birthday! You just solved my messy code puzzle. Your real gift is hidden in the living room drawer!"
         </div>
     </div>
 
+    <!-- JAVASCRIPT -->
     <script>
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
@@ -159,7 +165,7 @@
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
             if(sectionName === 'puzzle') {
-                setTimeout(startJigsaw, 200); // Small pause to allow container to render
+                setTimeout(startJigsaw, 300); // Increased delay for container sizing
             }
         }
 
@@ -168,25 +174,18 @@
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        // SECURE LOADING FOR GORHILL JIGSAW ENGINE
         let myPuzzle = null;
 
         function startJigsaw() {
             const container = document.getElementById('puzzle-canvas-container');
-            container.innerHTML = '<h3>Loading Lilou\'s Puzzle... 🎁</h3>'; // Temporary loading message
-            document.getElementById('win-message').style.display = 'none'; // Hide win banner on restart
+            container.innerHTML = ''; 
+            document.getElementById('win-message').style.display = 'none';
 
-            // Force create a real HTML Image object first to beat the library loading bug
-            const puzzleImg = new Image();
-            puzzleImg.src = 'puzzle.jpg.png'; // Make sure this matches your exact filename on GitHub!
-
-            puzzleImg.onload = function() {
-                container.innerHTML = ''; // Wipe out loading message
-                
-                // Launch the engine now that the image is 100% loaded in browser memory
+            // Direct initiation strategy matching the unpkg standard interface
+            try {
                 myPuzzle = new jigsaw.JigsawPuzzle({
                     container: container,
-                    image: puzzleImg, // Passing the actual loaded image object instead of a string path
+                    imageSrc: './puzzle.jpg.png', // Explicit local directory routing
                     piecesX: 6,       
                     piecesY: 6,       
                     edgeSharpness: 0.5,        
@@ -196,11 +195,10 @@
                         document.getElementById('win-message').style.display = 'block';
                     }
                 });
-            };
-
-            puzzleImg.onerror = function() {
-                container.innerHTML = '<p style="color:red; font-weight:bold;">⚠️ Oops! The image file "puzzle.jpg.png" couldn\'t be found. Double check your file name on GitHub!</p>';
-            };
+            } catch(err) {
+                container.innerHTML = '<p style="color:red;">Engine initialization error. Try refreshing the page!</p>';
+                console.error(err);
+            }
         }
     </script>
 </body>
