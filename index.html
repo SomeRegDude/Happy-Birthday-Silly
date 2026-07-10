@@ -137,44 +137,52 @@
 
     <script>
         function showSection(sectionName) {
-            document.getElementById('home-section').classList.add('hidden');
-            document.getElementById('letters-section').classList.add('hidden');
-            document.getElementById('photos-section').classList.add('hidden');
-            document.getElementById('puzzle-section').classList.add('hidden');
-            document.getElementById(sectionName + '-section').classList.remove('hidden');
-            
-            if(sectionName === 'puzzle') {
-                // Give the tab a tiny fraction of a second to reveal itself so the puzzle calculates sizing correctly
-                setTimeout(startJigsaw, 100);
+    document.getElementById('home-section').classList.add('hidden');
+    document.getElementById('letters-section').classList.add('hidden');
+    document.getElementById('photos-section').classList.add('hidden');
+    document.getElementById('puzzle-section').classList.add('hidden');
+    document.getElementById(sectionName + '-section').classList.remove('hidden');
+    
+    if(sectionName === 'puzzle') {
+        setTimeout(startJigsaw, 200); // Small pause to allow container to render
+    }
+}
+
+function toggleLetter(letterId) {
+    var letter = document.getElementById(letterId);
+    letter.style.display = (letter.style.display === "block") ? "none" : "block";
+}
+
+// SECURE LOADING FOR GORHILL JIGSAW ENGINE
+let myPuzzle = null;
+
+function startJigsaw() {
+    const container = document.getElementById('puzzle-canvas-container');
+    container.innerHTML = '<h3>Loading Lilou\'s Puzzle... 🎁</h3>'; // Temporary loading message
+
+    // Force create a real HTML Image object first to beat the loading bug
+    const puzzleImg = new Image();
+    puzzleImg.src = 'puzzle.jpg.png'; // Make sure this matches your exact filename on GitHub!
+
+    puzzleImg.onload = function() {
+        container.innerHTML = ''; // Wipe out loading message
+        
+        // Launch the engine now that the image is 100% loaded in browser memory
+        myPuzzle = new jigsaw.JigsawPuzzle({
+            container: container,
+            image: puzzleImg, // Passing the actual loaded image object instead of a string path
+            piecesX: 6,       
+            piecesY: 6,       
+            edgeSharpness: 0.5,        
+            edgeVariance: 0.2,          
+            shuffled: true,             
+            onComplete: function() {
+                document.getElementById('win-message').style.display = 'block';
             }
-        }
+        });
+    };
 
-        function toggleLetter(letterId) {
-            var letter = document.getElementById(letterId);
-            letter.style.display = (letter.style.display === "block") ? "none" : "block";
-        }
-
-        // INTEGRATING THE GORHILL JIGSAW ENGINE
-        let myPuzzle = null;
-
-        function startJigsaw() {
-            const container = document.getElementById('puzzle-canvas-container');
-            container.innerHTML = ''; // Clear out old puzzle if restarting
-
-            // Configuration object expected by gorhill's library
-            myPuzzle = new jigsaw.JigsawPuzzle({
-                container: container,
-                imageSrc: 'puzzle.jpg.png', // Your filename
-                piecesX: 6,                 // 6 pieces wide
-                piecesY: 6,                 // 6 pieces high
-                edgeSharpness: 0.5,        
-                edgeVariance: 0.2,          // Makes the puzzle tabs look classic and wavy
-                shuffled: true,             // Starts scrambled
-                onComplete: function() {
-                    alert("🎉 YOU DID IT CHOCO! Happy Birthday! Check your living room drawer for your real gift! ❤️");
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+    puzzleImg.onerror = function() {
+        container.innerHTML = '<p style="color:red; font-weight:bold;">⚠️ Oops! The image file "puzzle.jpg.png" couldn\'t be found. Double check your file name on GitHub!</p>';
+    };
+}
