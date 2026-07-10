@@ -11,6 +11,7 @@
             text-align: center;
             margin: 0;
             padding: 20px;
+            user-select: none;
         }
         .header {
             padding: 40px 20px;
@@ -73,16 +74,33 @@
             white-space: pre-line;
         }
 
-        /* REAL JIGSAW PUZZLE CONTAINER */
-        #puzzle-canvas-container {
-            width: 100%;
-            min-height: 500px;
+        /* SELF-CONTAINED JIGSAW PUZZLE WORKSPACE */
+        #puzzle-board {
+            position: relative;
+            width: 500px;
+            height: 500px;
             margin: 20px auto;
             background: #fafafa;
             border: 2px dashed #ffb3c1;
             border-radius: 10px;
-            position: relative;
             overflow: hidden;
+        }
+        .puzzle-piece {
+            position: absolute;
+            width: 125px;
+            height: 125px;
+            background-image: url('puzzle.jpg.png');
+            background-size: 500px 500px;
+            cursor: grab;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: box-shadow 0.1s;
+            z-index: 2;
+        }
+        .puzzle-piece:active {
+            cursor: grabbing;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            z-index: 10;
         }
         #win-message {
             display: none;
@@ -95,9 +113,6 @@
             font-weight: bold;
         }
     </style>
-
-    <!-- Alternative Stable Script Delivery Method -->
-    <script src="https://unpkg.com/gorhill-jigsawpuzzle@1.0.1/jigsawpuzzle.js"></script>
 </head>
 <body>
 
@@ -126,8 +141,6 @@
         <div id="letter1" class="letter-content">Dear Lilou,\n\n[Type message 1 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
         <div id="letter2" class="letter-content">Hey choco,\n\n[Type message 2 here...]</div>
-        <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
-        <div id="letter3" class="letter-content">Silly baby,\n\n[Type message 3 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
         <div id="letter4" class="letter-content">My favorite person,\n\n[Type message 4 here...]</div>
         <div class="letter-envelope" onclick="toggleLetter('letter5')">✉️ Secret Letter #5</div>
@@ -142,16 +155,16 @@
 
     <!-- 4. PUZZLE SECTION -->
     <div id="puzzle-section" class="content-section hidden">
-        <h3>🧩 Drag and drop the pieces to finish the Jigsaw!</h3>
-        <p>Match the interlocking edges together.</p>
+        <h3>🧩 Drag and pieces back to their correct spots!</h3>
+        <p>They will auto-snap and stick cleanly when you get them close enough.</p>
         
-        <div id="puzzle-canvas-container"></div>
+        <div id="puzzle-board" id="board"></div>
         
-        <button class="tab-btn" onclick="startJigsaw()" style="margin-top:10px;">Shuffle / Restart</button>
+        <button class="tab-btn" onclick="initPuzzle()" style="margin-top:10px;">Scramble / Reset</button>
 
         <div id="win-message">
             🎉 YOU DID IT CHOCO! 🎉<br>
-            "Happy Birthday! You just solved my messy code puzzle. Your real gift is hidden in the living room drawer!"
+            "Happy Birthday! You just solved my code puzzle. Your real gift is hidden in the living room drawer!"
         </div>
     </div>
 
@@ -165,7 +178,7 @@
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
             if(sectionName === 'puzzle') {
-                setTimeout(startJigsaw, 300); // Increased delay for container sizing
+                initPuzzle();
             }
         }
 
@@ -174,30 +187,130 @@
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        let myPuzzle = null;
+        // NATIVE DRAG-AND-DROP JIGSAW ENGINE
+        const rows = 4;
+        const cols = 4;
+        const pieceSize = 125; // 500px board / 4 pieces = 125px each
 
-        function startJigsaw() {
-            const container = document.getElementById('puzzle-canvas-container');
-            container.innerHTML = ''; 
+        function initPuzzle() {
+            const board = document.getElementById('puzzle-board');
+            board.innerHTML = ''; 
             document.getElementById('win-message').style.display = 'none';
 
-            // Direct initiation strategy matching the unpkg standard interface
-            try {
-                myPuzzle = new jigsaw.JigsawPuzzle({
-                    container: container,
-                    imageSrc: './puzzle.jpg.png', // Explicit local directory routing
-                    piecesX: 6,       
-                    piecesY: 6,       
-                    edgeSharpness: 0.5,        
-                    edgeVariance: 0.2,          
-                    shuffled: true,             
-                    onComplete: function() {
-                        document.getElementById('win-message').style.display = 'block';
-                    }
-                });
-            } catch(err) {
-                container.innerHTML = '<p style="color:red;">Engine initialization error. Try refreshing the page!</p>';
-                console.error(err);
+            let pieces = [];
+
+            // Generate puzzle grid pieces
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    
+                    // Slice the main image background up contextually
+                    piece.style.backgroundPosition = `-${c * pieceSize}px -${r * pieceSize}px`;
+                    
+                    // Track correct target spots
+                    const targetX = c * pieceSize;
+                    const targetY = r * pieceSize;
+                    piece.dataset.correctX = targetX;
+                    piece.dataset.correctY = targetY;
+                    piece.dataset.solved = "false";
+
+                    // Scramble initial layout spots randomly inside box boundaries
+                    const randomX = Math.random() * (500 - pieceSize);
+                    const randomY = Math.random() * (500 - pieceSize);
+                    piece.style.left = randomX + 'px';
+                    piece.style.top = randomY + 'px';
+
+                    setupDragAndDrop(piece);
+                    board.appendChild(piece);
+                }
+            }
+        }
+
+        function setupDragAndDrop(piece) {
+            let active = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = parseFloat(piece.style.left);
+            let yOffset = parseFloat(piece.style.top);
+
+            piece.addEventListener('mousedown', dragStart);
+            piece.addEventListener('touchstart', dragStart, { passive: false });
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('touchmove', drag, { passive: false });
+            window.addEventListener('mouseup', dragEnd);
+            window.addEventListener('touchend', dragEnd);
+
+            function dragStart(e) {
+                if (piece.dataset.solved === "true") return;
+                
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset;
+                    initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                }
+                active = true;
+            }
+
+            function drag(e) {
+                if (!active) return;
+                e.preventDefault();
+
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                // Keep pieces inside box frame walls
+                if (currentX < 0) currentX = 0;
+                if (currentY < 0) currentY = 0;
+                if (currentX > 500 - pieceSize) currentX = 500 - pieceSize;
+                if (currentY > 500 - pieceSize) currentY = 500 - pieceSize;
+
+                xOffset = currentX;
+                yOffset = currentY;
+                piece.style.left = currentX + 'px';
+                piece.style.top = currentY + 'px';
+            }
+
+            function dragEnd() {
+                if (!active) return;
+                active = false;
+
+                const correctX = parseFloat(piece.dataset.correctX);
+                const correctY = parseFloat(piece.dataset.correctY);
+
+                // Check distance target closeness. If close within 25px tolerance, clean snap!
+                if (Math.abs(xOffset - correctX) < 25 && Math.abs(yOffset - correctY) < 25) {
+                    piece.style.left = correctX + 'px';
+                    piece.style.top = correctY + 'px';
+                    xOffset = correctX;
+                    yOffset = correctY;
+                    piece.dataset.solved = "true";
+                    piece.style.boxShadow = "none";
+                    piece.style.cursor = "default";
+                    piece.style.zIndex = "1";
+                    checkWinCondition();
+                }
+            }
+        }
+
+        function checkWinCondition() {
+            const allPieces = document.querySelectorAll('.puzzle-piece');
+            let win = true;
+            allPieces.forEach(p => {
+                if (p.dataset.solved !== "true") win = false;
+            });
+
+            if (win) {
+                document.getElementById('win-message').style.display = 'block';
             }
         }
     </script>
