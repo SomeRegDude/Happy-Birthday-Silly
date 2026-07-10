@@ -74,6 +74,36 @@
             white-space: pre-line;
         }
 
+        /* Password Field Styling */
+        .password-gate {
+            display: none;
+            background: #fffdf9;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ffb3c1;
+        }
+        .pw-input {
+            padding: 8px 12px;
+            border: 2px solid #ffb3c1;
+            border-radius: 15px;
+            outline: none;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .pw-input:focus {
+            border-color: #ff4d6d;
+        }
+        .pw-btn {
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
         /* SELF-CONTAINED JIGSAW PUZZLE WORKSPACE */
         #puzzle-board {
             position: relative;
@@ -87,8 +117,8 @@
         }
         .puzzle-piece {
             position: absolute;
-            width: 100px; /* Adjusted to perfectly match 5x5 layout */
-            height: 100px; /* Adjusted to perfectly match 5x5 layout */
+            width: 100px; 
+            height: 100px; 
             background-image: url('puzzle.jpg.png');
             background-size: 500px 500px;
             cursor: grab;
@@ -139,11 +169,20 @@
         <p>Click an envelope to open it!</p>
         <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
         <div id="letter1" class="letter-content">Dear Lilou,\n\n[Type message 1 here...]</div>
+        
         <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
         <div id="letter2" class="letter-content">Hey choco,\n\n[Type message 2 here...]</div>
+        
         <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
         <div id="letter4" class="letter-content">My favorite person,\n\n[Type message 4 here...]</div>
-        <div class="letter-envelope" onclick="toggleLetter('letter5')">✉️ Secret Letter #5</div>
+        
+        <!-- Password locked envelope -->
+        <div class="letter-envelope" onclick="togglePasswordGate()">🔒 Secret Letter #5 (Password Locked!)</div>
+        <div id="letter5-gate" class="password-gate">
+            <input type="password" id="letter5-password" class="pw-input" placeholder="Enter secret code...">
+            <button class="pw-btn" onclick="checkLetterPassword()">Unlock</button>
+            <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
+        </div>
         <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
     </div>
 
@@ -187,33 +226,61 @@
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        // UPDATED NATIVE 5x5 DRAG-AND-DROP JIGSAW ENGINE
+        // PASSWORD SECURITY FOR LETTER 5
+        function togglePasswordGate() {
+            var gate = document.getElementById('letter5-gate');
+            var letter = document.getElementById('letter5');
+            
+            // If the letter is already unlocked and showing, clicking the envelope will hide it again
+            if (letter.style.display === "block") {
+                letter.style.display = "none";
+                return;
+            }
+            
+            gate.style.display = (gate.style.display === "block") ? "none" : "block";
+            document.getElementById('pw-error').style.display = "none";
+        }
+
+        function checkLetterPassword() {
+            const userInput = document.getElementById('letter5-password').value;
+            const errorMsg = document.getElementById('pw-error');
+            const letter = document.getElementById('letter5');
+            const gate = document.getElementById('letter5-gate');
+
+            // CHANGE YOUR PASSWORD HERE BETWEEN THE QUOTES!
+            const correctPassword = "sillychoco"; 
+
+            if (userInput === correctPassword) {
+                gate.style.display = "none"; // Hide password input field
+                letter.style.display = "block"; // Reveal the sweet letter message
+                errorMsg.style.display = "none";
+            } else {
+                errorMsg.style.display = "block"; // Show try again error
+            }
+        }
+
+        // NATIVE 5x5 DRAG-AND-DROP JIGSAW ENGINE
         const rows = 5;
         const cols = 5;
-        const pieceSize = 100; // 500px board / 5 pieces = 100px each
+        const pieceSize = 100; 
 
         function initPuzzle() {
             const board = document.getElementById('puzzle-board');
             board.innerHTML = ''; 
             document.getElementById('win-message').style.display = 'none';
 
-            // Generate puzzle grid pieces
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const piece = document.createElement('div');
                     piece.className = 'puzzle-piece';
-                    
-                    // Slice the main image background up contextually
                     piece.style.backgroundPosition = `-${c * pieceSize}px -${r * pieceSize}px`;
                     
-                    // Track correct target spots
                     const targetX = c * pieceSize;
                     const targetY = r * pieceSize;
                     piece.dataset.correctX = targetX;
                     piece.dataset.correctY = targetY;
                     piece.dataset.solved = "false";
 
-                    // Scramble initial layout spots randomly inside box boundaries
                     const randomX = Math.random() * (500 - pieceSize);
                     const randomY = Math.random() * (500 - pieceSize);
                     piece.style.left = randomX + 'px';
@@ -266,7 +333,6 @@
                     currentY = e.clientY - initialY;
                 }
 
-                // Keep pieces inside box frame walls
                 if (currentX < 0) currentX = 0;
                 if (currentY < 0) currentY = 0;
                 if (currentX > 500 - pieceSize) currentX = 500 - pieceSize;
@@ -285,7 +351,6 @@
                 const correctX = parseFloat(piece.dataset.correctX);
                 const correctY = parseFloat(piece.dataset.correctY);
 
-                // Check distance target closeness. If close within 20px tolerance, clean snap!
                 if (Math.abs(xOffset - correctX) < 20 && Math.abs(yOffset - correctY) < 20) {
                     piece.style.left = correctX + 'px';
                     piece.style.top = correctY + 'px';
