@@ -104,6 +104,62 @@
             margin-left: 5px;
         }
 
+        /* DYNAMIC PHOTOS GRID GALLERY */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .photo-card {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .photo-card:hover {
+            transform: scale(1.03);
+            border-color: #ffb3c1;
+        }
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* LIGHTBOX IMAGE POPUP OVERLAY */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         /* SELF-CONTAINED JIGSAW PUZZLE WORKSPACE */
         #puzzle-board {
             position: relative;
@@ -188,8 +244,59 @@
 
     <!-- 3. PHOTOS SECTION -->
     <div id="photos-section" class="content-section hidden">
-        <h3>📸 Photosss Coming Soon</h3>
-        <p>This is where we will add our favorite memories next!</p>
+        <h3>📸 Our Favorite Memories</h3>
+        <p>Click any photo to open it full size!</p>
+        
+        <div class="photo-grid">
+            <!-- Automatically hooks up all 41 sequentially named photo files -->
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (1).jpg" alt="Memory 1"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (2).jpg" alt="Memory 2"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (3).jpg" alt="Memory 3"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (4).jpg" alt="Memory 4"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (5).jpg" alt="Memory 5"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (6).jpg" alt="Memory 6"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (7).jpg" alt="Memory 7"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (8).jpg" alt="Memory 8"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (9).jpg" alt="Memory 9"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (10).jpg" alt="Memory 10"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (11).jpg" alt="Memory 11"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (12).jpg" alt="Memory 12"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (13).jpg" alt="Memory 13"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (14).jpg" alt="Memory 14"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (15).jpg" alt="Memory 15"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (16).jpg" alt="Memory 16"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (17).jpg" alt="Memory 17"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (18).jpg" alt="Memory 18"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (19).jpg" alt="Memory 19"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (20).jpg" alt="Memory 20"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (21).jpg" alt="Memory 21"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (22).jpg" alt="Memory 22"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (23).jpg" alt="Memory 23"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (24).jpg" alt="Memory 24"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (25).jpg" alt="Memory 25"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (26).jpg" alt="Memory 26"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (27).jpg" alt="Memory 27"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (28).jpg" alt="Memory 28"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (29).jpg" alt="Memory 29"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (30).jpg" alt="Memory 30"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (31).jpg" alt="Memory 31"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (32).jpg" alt="Memory 32"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (33).jpg" alt="Memory 33"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (34).jpg" alt="Memory 34"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (35).jpg" alt="Memory 35"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (36).jpg" alt="Memory 36"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (37).jpg" alt="Memory 37"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (38).jpg" alt="Memory 38"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (39).jpg" alt="Memory 39"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (40).jpg" alt="Memory 40"></div>
+            <div class="photo-card" onclick="openLightbox(this)"><img src="photo (41).jpg" alt="Memory 41"></div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX SYSTEM CONTAINER -->
+    <div id="lightboxOverlay" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightboxImg">
     </div>
 
     <!-- 4. PUZZLE SECTION -->
@@ -231,7 +338,6 @@
             var gate = document.getElementById('letter5-gate');
             var letter = document.getElementById('letter5');
             
-            // If the letter is already unlocked and showing, clicking the envelope will hide it again
             if (letter.style.display === "block") {
                 letter.style.display = "none";
                 return;
@@ -247,16 +353,26 @@
             const letter = document.getElementById('letter5');
             const gate = document.getElementById('letter5-gate');
 
-            // CHANGE YOUR PASSWORD HERE BETWEEN THE QUOTES!
             const correctPassword = "sillychoco"; 
 
             if (userInput === correctPassword) {
-                gate.style.display = "none"; // Hide password input field
-                letter.style.display = "block"; // Reveal the sweet letter message
+                gate.style.display = "none"; 
+                letter.style.display = "block"; 
                 errorMsg.style.display = "none";
             } else {
-                errorMsg.style.display = "block"; // Show try again error
+                errorMsg.style.display = "block"; 
             }
+        }
+
+        // LIGHTBOX INTERACTION LOGIC
+        function openLightbox(element) {
+            const imgSrc = element.querySelector('img').src;
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('lightboxOverlay').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').style.display = 'none';
         }
 
         // NATIVE 5x5 DRAG-AND-DROP JIGSAW ENGINE
