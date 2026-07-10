@@ -191,42 +191,22 @@
             margin-left: 5px;
         }
 
-        /* SUPER SECRET LAB VIEW (Heart Animation + Candle) */
+        /* SUPER SECRET REPO VIEW DESIGN */
         .super-secret-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 450px;
+            min-height: 520px;
             position: relative;
         }
 
-        /* Pure CSS Heartbeat Pulse Graphic (Based on repo design) */
-        .beating-heart-graphic {
-            background-color: #ff4d6d;
-            display: inline-block;
-            height: 70px;
-            width: 70px;
-            position: relative;
-            transform: rotate(-45deg);
-            animation: pulseHeart 0.8s infinite alternate ease-in-out;
-            margin-bottom: 40px;
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
-        }
-        .beating-heart-graphic:before, .beating-heart-graphic:after {
-            content: "";
-            background-color: #ff4d6d;
-            border-radius: 50%;
-            height: 70px;
-            position: absolute;
-            width: 70px;
-        }
-        .beating-heart-graphic:before { top: -35px; left: 0; }
-        .beating-heart-graphic:after { left: 35px; top: 0; }
-
-        @keyframes pulseHeart {
-            0% { transform: scale(1) rotate(-45deg); }
-            100% { transform: scale(1.18) rotate(-45deg); }
+        /* Canvas element wrapper from Repository styling */
+        #heartCanvas {
+            width: 280px;
+            height: 280px;
+            background: transparent;
+            margin-bottom: 10px;
         }
 
         /* Main Screen Interactive Candle */
@@ -235,7 +215,7 @@
             position: relative;
             width: 60px;
             height: 120px;
-            margin: 20px auto;
+            margin: 10px auto;
         }
         .candle-stick {
             width: 20px;
@@ -502,13 +482,14 @@ To finally finish and open your last gift, you need to answer this riddle:
         </div>
     </div>
 
-    <!-- 5. SUPER SECRET ACTIVE VIEW -->
+    <!-- 5. SUPER SECRET ACTIVE VIEW (WITH REPO MATHEMATICAL CANVAS HEART) -->
     <div id="secret-section" class="content-section hidden">
         <div class="super-secret-container">
-            <!-- Pulsing heart custom code implementation -->
-            <div class="beating-heart-graphic"></div>
             
-            <h2 style="color: #ff4d6d; margin: 10px 0 0 0;">happy birthday, baby</h2>
+            <!-- Exact Canvas Vector Rendering system built inside your page framework -->
+            <canvas id="heartCanvas"></canvas>
+            
+            <h2 style="color: #ff4d6d; margin: 5px 0 0 0;">happy birthday, baby</h2>
             
             <!-- Interactive candle built right into this screen view -->
             <div class="candle-container" onclick="blowCandleSecret(event)">
@@ -525,6 +506,8 @@ To finally finish and open your last gift, you need to answer this riddle:
 
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
+        let heartAnimationId = null;
+
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
             const container = document.getElementById('heartsContainer');
@@ -575,7 +558,7 @@ To finally finish and open your last gift, you need to answer this riddle:
         // BLOW OUT CANDLE IN SUPER SECRET VIEW
         function blowCandleSecret(event) {
             const flame = document.getElementById('secret-flame');
-            if(flame.style.display === 'none') return; // already blown out
+            if(flame.style.display === 'none') return; 
             
             flame.style.display = 'none';
             document.getElementById('candle-tip-text').innerText = "Make a wish! 🌟";
@@ -590,6 +573,12 @@ To finally finish and open your last gift, you need to answer this riddle:
             document.getElementById('puzzle-section').classList.add('hidden');
             document.getElementById('secret-section').classList.add('hidden');
             
+            // Stop engine math loops safely if moving away from secret zone
+            if (heartAnimationId) {
+                cancelAnimationFrame(heartAnimationId);
+                heartAnimationId = null;
+            }
+
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
             // Manage Active Tab Highlight States
@@ -599,6 +588,8 @@ To finally finish and open your last gift, you need to answer this riddle:
 
             if(sectionName === 'puzzle') {
                 initPuzzle();
+            } else if (sectionName === 'secret') {
+                startRepositoryHeartEngine();
             }
         }
 
@@ -768,6 +759,79 @@ To finally finish and open your last gift, you need to answer this riddle:
             if (win) {
                 document.getElementById('win-message').style.display = 'block';
             }
+        }
+
+        // =====================================================================
+        // REPOSITORY MATH CANVAS HEART ENGINE HOOK
+        // =====================================================================
+        function startRepositoryHeartEngine() {
+            const canvas = document.getElementById('heartCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Sync pixel depth
+            canvas.width = 280;
+            canvas.height = 280;
+
+            const targetPoints = [];
+            const particles = [];
+            const particleCount = 220;
+
+            // Generate structural mathematical coordinates for a clean canvas vector heart
+            function heartEquation(t) {
+                return {
+                    x: 16 * Math.pow(Math.sin(t), 3),
+                    y: -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t))
+                };
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                const t = (i / particleCount) * Math.PI * 2;
+                const point = heartEquation(t);
+                // Scale coordinates smoothly to fit nicely into our 280px bounding canvas
+                targetPoints.push({
+                    x: canvas.width / 2 + point.x * 7.5,
+                    y: canvas.height / 2 + point.y * 7.5
+                });
+
+                // Spawn positions randomly with a customized speed variance array setup
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    speed: 0.03 + Math.random() * 0.04
+                });
+            }
+
+            let dynamicTimeScale = 0;
+
+            function renderLoop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                dynamicTimeScale += 0.06;
+
+                // Subtle dynamic size pulsing matrix equation simulation
+                const scalePulse = 1 + 0.07 * Math.sin(dynamicTimeScale);
+
+                for (let i = 0; i < particleCount; i++) {
+                    const p = particles[i];
+                    
+                    // Shift the targets relative to the center origin based on pulse equations
+                    const targetX = canvas.width / 2 + (targetPoints[i].x - canvas.width / 2) * scalePulse;
+                    const targetY = canvas.height / 2 + (targetPoints[i].y - canvas.height / 2) * scalePulse;
+
+                    // Interpolate steps smoothly
+                    p.x += (targetX - p.x) * p.speed;
+                    p.y += (targetY - p.y) * p.speed;
+
+                    // Render gorgeous pastel neon points safely
+                    ctx.fillStyle = '#ff4d6d';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                heartAnimationId = requestAnimationFrame(renderLoop);
+            }
+
+            renderLoop();
         }
     </script>
 </body>
