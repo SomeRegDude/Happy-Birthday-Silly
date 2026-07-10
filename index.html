@@ -41,7 +41,7 @@
         /* Content Sections */
         .content-section {
             background: white;
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
             padding: 30px;
             border-radius: 15px;
@@ -73,62 +73,20 @@
             white-space: pre-line;
         }
 
-        /* 6x6 JIGSAW PUZZLE STYLING */
-        #puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(6, 50px);
-            grid-template-rows: repeat(6, 50px);
-            gap: 0px; /* Kept tight so tabs interlock visually */
-            justify-content: center;
-            background-color: #ffe5ec;
-            padding: 10px;
-            border-radius: 15px;
-            width: 300px;
+        /* REAL JIGSAW PUZZLE CONTAINER */
+        #puzzle-canvas-container {
+            width: 100%;
+            min-height: 500px;
             margin: 20px auto;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-        }
-        .tile {
-            width: 50px;
-            height: 50px;
-            background-image: url('puzzle.jpg.png'); /* Updated to match your filename */
-            background-size: 300px 300px;
-            cursor: pointer;
-            box-sizing: border-box;
-            
-            /* The Magic: This shapes the straight borders into alternating jigsaw tabs */
-            border-radius: 14px; 
-            outline: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.4), inset -2px -2px 4px rgba(0,0,0,0.2);
-        }
-        
-        /* Alternate puzzle cuts using CSS border radii to mimic interlocking shapes */
-        .tile:nth-child(odd) {
-            border-top-right-radius: 0px;
-            border-bottom-left-radius: 0px;
-        }
-        .tile:nth-child(even) {
-            border-top-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-        }
-
-        .tile.empty {
-            background-image: none !important;
-            background-color: #fff5f5;
-            box-shadow: none;
-            outline: 2px dashed #ffb3c1;
-            cursor: default;
-        }
-        #win-message {
-            display: none;
-            color: #ff4d6d;
-            font-size: 1.2rem;
-            margin-top: 15px;
-            background: #ffe5ec;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
+            background: #fafafa;
+            border: 2px dashed #ffb3c1;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
         }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/gh/gorhill/jigsawpuzzle-rhill@master/jigsawpuzzle.js"></script>
 </head>
 <body>
 
@@ -143,13 +101,11 @@
         <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
     </div>
 
-    <!-- 1. HOME SECTION -->
     <div id="home-section" class="content-section">
         <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
         <p>Take your time exploring each one.(super pls)</p>
     </div>
 
-    <!-- 2. SECRETS LETTERS SECTION -->
     <div id="letters-section" class="content-section hidden">
         <h3>💌 Your Secret Letters</h3>
         <p>Click an envelope to open it!</p>
@@ -165,27 +121,20 @@
         <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
     </div>
 
-    <!-- 3. PHOTOS SECTION -->
     <div id="photos-section" class="content-section hidden">
         <h3>📸 Photosss Coming Soon</h3>
         <p>This is where we will add our favorite memories next!</p>
     </div>
 
-    <!-- 4. PUZZLE SECTION -->
     <div id="puzzle-section" class="content-section hidden">
-        <h3>🧩 Solve the 6x6 Jigsaw Style Puzzle to unlock your message!</h3>
-        <p>Click pieces next to the empty space to slide and interlock them.</p>
+        <h3>🧩 Drag and drop the pieces to finish the Jigsaw!</h3>
+        <p>Match the interlocking edges together.</p>
         
-        <div id="puzzle-container"></div>
-        <button class="tab-btn" onclick="scramblePuzzle()" style="margin-top:10px;">Scramble Again</button>
+        <div id="puzzle-canvas-container"></div>
         
-        <div id="win-message">
-            🎉 YOU DID IT CHOCO! 🎉<br>
-            "Happy Birthday! You just solved my messy code puzzle. Your real gift is hidden in the living room drawer!" *(Or write whatever surprise message you want here!)*
-        </div>
+        <button class="tab-btn" onclick="startJigsaw()" style="margin-top:10px;">Shuffle / Restart</button>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
@@ -194,7 +143,10 @@
             document.getElementById('puzzle-section').classList.add('hidden');
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
-            if(sectionName === 'puzzle') { initPuzzle(); }
+            if(sectionName === 'puzzle') {
+                // Give the tab a tiny fraction of a second to reveal itself so the puzzle calculates sizing correctly
+                setTimeout(startJigsaw, 100);
+            }
         }
 
         function toggleLetter(letterId) {
@@ -202,74 +154,26 @@
             letter.style.display = (letter.style.display === "block") ? "none" : "block";
         }
 
-        // 6x6 PUZZLE LOGIC
-        const GRID_SIZE = 6;
-        const TILE_COUNT = GRID_SIZE * GRID_SIZE;
-        const EMPTY_INDEX = TILE_COUNT - 1; 
+        // INTEGRATING THE GORHILL JIGSAW ENGINE
+        let myPuzzle = null;
 
-        let tiles = [];
-        let correctOrder = [];
+        function startJigsaw() {
+            const container = document.getElementById('puzzle-canvas-container');
+            container.innerHTML = ''; // Clear out old puzzle if restarting
 
-        for (let i = 0; i < TILE_COUNT; i++) {
-            tiles.push(i);
-            correctOrder.push(i);
-        }
-
-        function initPuzzle() {
-            scramblePuzzle();
-            renderPuzzle();
-        }
-
-        function renderPuzzle() {
-            const container = document.getElementById('puzzle-container');
-            container.innerHTML = '';
-            
-            tiles.forEach((tileIdx, currentPos) => {
-                const tile = document.createElement('div');
-                tile.classList.add('tile');
-                
-                if (tileIdx === EMPTY_INDEX) {
-                    tile.classList.add('empty');
-                } else {
-                    const row = Math.floor(tileIdx / GRID_SIZE);
-                    const col = tileIdx % GRID_SIZE;
-                    tile.style.backgroundPosition = `-${col * 50}px -${row * 50}px`;
-                    tile.onclick = () => moveTile(currentPos);
+            // Configuration object expected by gorhill's library
+            myPuzzle = new jigsaw.JigsawPuzzle({
+                container: container,
+                imageSrc: 'puzzle.jpg.png', // Your filename
+                piecesX: 6,                 // 6 pieces wide
+                piecesY: 6,                 // 6 pieces high
+                edgeSharpness: 0.5,        
+                edgeVariance: 0.2,          // Makes the puzzle tabs look classic and wavy
+                shuffled: true,             // Starts scrambled
+                onComplete: function() {
+                    alert("🎉 YOU DID IT CHOCO! Happy Birthday! Check your living room drawer for your real gift! ❤️");
                 }
-                container.appendChild(tile);
             });
-            checkWin();
-        }
-
-        function scramblePuzzle() {
-            document.getElementById('win-message').style.display = 'none';
-            for (let i = tiles.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
-            }
-            renderPuzzle();
-        }
-
-        function moveTile(pos) {
-            const emptyPos = tiles.indexOf(EMPTY_INDEX);
-            const validMoves = [];
-            
-            if (pos % GRID_SIZE > 0) validMoves.push(pos - 1);         
-            if (pos % GRID_SIZE < GRID_SIZE - 1) validMoves.push(pos + 1); 
-            if (pos > GRID_SIZE - 1) validMoves.push(pos - GRID_SIZE);     
-            if (pos < TILE_COUNT - GRID_SIZE) validMoves.push(pos + GRID_SIZE); 
-
-            if (validMoves.includes(emptyPos)) {
-                [tiles[pos], tiles[emptyPos]] = [tiles[emptyPos], tiles[pos]];
-                renderPuzzle();
-            }
-        }
-
-        function checkWin() {
-            const isWin = tiles.every((val, idx) => val === correctOrder[idx]);
-            if (isWin && document.getElementById('puzzle-container').innerHTML !== '') {
-                document.getElementById('win-message').style.display = 'block';
-            }
         }
     </script>
 </body>
