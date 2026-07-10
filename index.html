@@ -197,23 +197,25 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 520px;
+            min-height: 560px;
             position: relative;
         }
 
-        /* Container for the bouncing/painting text canvas heart */
+        /* Canvas Wrapper Window */
         #canvasHeartWrapper {
             position: relative;
-            width: 320px;
-            height: 280px;
+            width: 450px;
+            height: 400px;
             margin-bottom: 20px;
-            background: transparent;
+            background: #fffbfa;
+            border: 2px dashed #ffb3c1;
+            border-radius: 12px;
+            overflow: hidden;
         }
         #paintingCanvas {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 1;
         }
 
         /* Main Screen Interactive Candle */
@@ -221,13 +223,12 @@
             cursor: pointer;
             position: relative;
             width: 60px;
-            height: 120px;
+            height: 100px;
             margin: 10px auto;
-            z-index: 2;
         }
         .candle-stick {
             width: 20px;
-            height: 70px;
+            height: 60px;
             background: #ffb3c1;
             border-radius: 4px;
             position: absolute;
@@ -238,7 +239,7 @@
             height: 10px;
             background: #444;
             position: absolute;
-            top: 42px; left: 29px;
+            top: 32px; left: 29px;
         }
         .candle-flame {
             width: 14px;
@@ -246,7 +247,7 @@
             background: #ffb703;
             border-radius: 50% 50% 20% 20%;
             position: absolute;
-            top: 20px; left: 23px;
+            top: 10px; left: 23px;
             box-shadow: 0 0 15px #ffb703;
             animation: flicker 0.1s ease-in-out infinite alternate;
         }
@@ -411,7 +412,7 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
         </div>
         
-        <!-- CONTENT OF LETTER 5 WRAPPED IN SECRET CODE SPECIFICATIONS -->
+        <!-- CONTENT OF LETTER 5 -->
         <div id="letter5" class="letter-content">Happy birthday, baby ❤️
 
 To finally finish and open your last gift, you need to answer this riddle:
@@ -490,7 +491,7 @@ To finally finish and open your last gift, you need to answer this riddle:
         </div>
     </div>
 
-    <!-- 5. SUPER SECRET ACTIVE VIEW (BOUNCING PAINTING CANVAS ENGINE) -->
+    <!-- 5. SUPER SECRET VIEW (BOUNCING PAINTING CANVAS ENGINE) -->
     <div id="secret-section" class="content-section hidden">
         <div class="super-secret-container">
             
@@ -500,7 +501,7 @@ To finally finish and open your last gift, you need to answer this riddle:
             
             <h2 style="color: #ff4d6d; margin: 5px 0 0 0;">happy birthday, baby</h2>
             
-            <!-- Interactive candle built right into this screen view -->
+            <!-- Interactive candle -->
             <div class="candle-container" onclick="blowCandleSecret(event)">
                 <div class="candle-flame" id="secret-flame"></div>
                 <div class="candle-wick"></div>
@@ -508,7 +509,6 @@ To finally finish and open your last gift, you need to answer this riddle:
             </div>
             <p id="candle-tip-text" style="color: #777; font-size: 0.85rem; margin-top:-5px;">(Click the flame to blow it out!)</p>
             
-            <!-- Context Date Display located right at the panel bottom -->
             <div class="footer-date-stamp">07/11/2026</div>
         </div>
     </div>
@@ -582,7 +582,6 @@ To finally finish and open your last gift, you need to answer this riddle:
             document.getElementById('puzzle-section').classList.add('hidden');
             document.getElementById('secret-section').classList.add('hidden');
             
-            // Turn off canvas draw rendering loops smoothly when leaving
             if (kineticHeartAnimId) {
                 cancelAnimationFrame(kineticHeartAnimId);
                 kineticHeartAnimId = null;
@@ -590,10 +589,13 @@ To finally finish and open your last gift, you need to answer this riddle:
 
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
-            // Manage Active Tab Highlight States
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            // Highlight active tab
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
             if(sectionName === 'puzzle') {
                 initPuzzle();
@@ -620,7 +622,6 @@ To finally finish and open your last gift, you need to answer this riddle:
             document.getElementById('pw-error').style.display = "none";
         }
 
-        // PASSWORD VALIDATION ENGINE (TRIGGERS SECRET ACCESS BUTTON)
         function checkLetterPassword() {
             const userInput = document.getElementById('letter5-password').value;
             const errorMsg = document.getElementById('pw-error');
@@ -633,8 +634,6 @@ To finally finish and open your last gift, you need to answer this riddle:
                 gate.style.display = "none"; 
                 letter.style.display = "block"; 
                 errorMsg.style.display = "none";
-                
-                // UNLOCK SUPER SECRET BUTTON INTERFACE ELEMENT
                 document.getElementById('secret-tab-btn').style.display = "inline-block";
             } else {
                 errorMsg.style.display = "block"; 
@@ -771,79 +770,86 @@ To finally finish and open your last gift, you need to answer this riddle:
         }
 
         // =====================================================================
-        // KINETIC BOUNCING/PAINTING TEXT HEART ENGINE
+        // FIXED KINETIC TRAIL-PAINTING TEXT HEART ENGINE
         // =====================================================================
         function startBouncingPaintHeart() {
             const canvas = document.getElementById('paintingCanvas');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = 320;
-            canvas.height = 280;
+            // Fixed Canvas Sizing Layout Coordinates
+            canvas.width = 450;
+            canvas.height = 400;
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const phrase = "ILOVEYOU";
-            const targetCoordinates = [];
+            const targetPoints = [];
             
-            // Build the mathematical look-up reference map array
-            for (let y = 12; y >= -12; y -= 0.4) {
-                for (let x = -26; x <= 26; x += 0.4) {
-                    const valX = x * 0.05;
-                    const valY = y * 0.1;
+            // Build heart map using real mathematical boundaries
+            for (let y = 15; y >= -15; y -= 0.45) {
+                for (let x = -30; x <= 30; x += 0.45) {
+                    const valX = x * 0.045;
+                    const valY = y * 0.045;
+                    // Heart Curve Equation
                     const formula = Math.pow(valX*valX + valY*valY - 1, 3) - valX*valX * Math.pow(valY, 3);
                     
                     if (formula <= 0) {
-                        // Project mathematical bounds coordinates cleanly into canvas scale space
-                        const screenX = canvas.width / 2 + (x * 5.8);
-                        const screenY = canvas.height / 2 - (y * 10);
-                        targetCoordinates.push({ x: screenX, y: screenY, printed: false });
+                        const screenX = canvas.width / 2 + (x * 6.5);
+                        const screenY = canvas.height / 2 - (y * 6.5) - 20;
+                        targetPoints.push({ x: screenX, y: screenY, printed: false });
                     }
                 }
             }
 
-            // Create two active structural kinetic pointer text objects
+            // Create two active structural kinetic moving string pointer variables
             const bouncers = [
-                { x: 20, y: 30, vx: 3.5, vy: 2.2, text: "I Love You", phraseIndex: 0 },
-                { x: 300, y: 240, vx: -2.8, vy: -3.1, text: "I Love You", phraseIndex: 3 }
+                { x: 30, y: 40, vx: 4, vy: 3, text: "I Love You", phraseIndex: 0 },
+                { x: 400, y: 350, vx: -3, vy: -4, text: "I Love You", phraseIndex: 4 }
             ];
 
+            // Setup a background memory canvas layer to cache our permanent character trail
+            const trailCanvas = document.createElement('canvas');
+            trailCanvas.width = canvas.width;
+            trailCanvas.height = canvas.height;
+            const trailCtx = trailCanvas.getContext('2d');
+            trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+
             function runKineticLoop() {
-                // Paint step 1: Check proximity of bouncers to lay down trailing characters
+                // Move text bouncers around the area frame
                 bouncers.forEach(b => {
                     b.x += b.vx;
                     b.y += b.vy;
 
-                    // Standard edge bounce conditions
-                    if (b.x < 10 || b.x > canvas.width - 60) b.vx *= -1;
-                    if (b.y < 15 || b.y > canvas.height - 15) b.vy *= -1;
+                    // Bounce vectors directly off the visual container walls
+                    if (b.x < 10 || b.x > canvas.width - 70) b.vx *= -1;
+                    if (b.y < 20 || b.y > canvas.height - 20) b.vy *= -1;
 
-                    // Match adjacent look-up maps and imprint characters directly
-                    targetCoordinates.forEach(pt => {
+                    // Check if a bouncer crosses over unpainted parts of the heart map
+                    targetPoints.forEach(pt => {
                         if (!pt.printed) {
-                            const distance = Math.hypot(b.x - pt.x, b.y - pt.y);
-                            if (distance < 18) { // Paint trigger threshold radius
+                            const distance = Math.hypot(b.x + 25 - pt.x, b.y - pt.y);
+                            if (distance < 25) { // Radius size for printing trigger
                                 pt.printed = true;
-                                ctx.font = "bold 8px monospace";
-                                ctx.fillStyle = "#ff4d6d";
-                                // Choose continuous rotating characters cleanly
-                                const charToPrint = phrase[pt.phraseIndex % phrase.length];
-                                ctx.fillText(charToPrint, pt.x, pt.y);
-                                pt.phraseIndex = (pt.phraseIndex || 0) + 1;
+                                trailCtx.font = "bold 9px monospace";
+                                trailCtx.fillStyle = "#ff4d6d";
+                                
+                                const charToPrint = phrase[b.phraseIndex % phrase.length];
+                                trailCtx.fillText(charToPrint, pt.x, pt.y);
+                                b.phraseIndex++;
                             }
                         }
                     });
                 });
 
-                // Paint step 2: Draw the two floating interactive pointer texts over the top layer
-                // We wipe the canvas background with a tiny translucent frame layer every frame *ONLY* where the floating words are, or just clear the trail context cleanly by redrawing the text elements dynamically on top.
+                // Clear the view layer completely to update positions
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // To keep the trail permanent but the words moving, we draw the moving words, but we don't clear the full canvas!
-                // To prevent the words from leaving a fat solid white blur, we simply draw them as bright neon pointers.
+                // Draw all cached heart trail characters built up so far
+                ctx.drawImage(trailCanvas, 0, 0);
+
+                // Draw the actual floating "I Love You" texts right at their current positions
                 bouncers.forEach(b => {
-                    ctx.fillStyle = "#fff5f5";
-                    ctx.fillRect(b.x - 2, b.y - 10, 65, 14); // clear previous text block frame
-                    
-                    ctx.font = "bold 11px Arial";
+                    ctx.font = "bold 13px Arial";
                     ctx.fillStyle = "#9a4858";
                     ctx.fillText(b.text, b.x, b.y);
                 });
