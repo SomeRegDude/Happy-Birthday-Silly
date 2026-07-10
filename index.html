@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My silly baby</title>
     <style>
-        /* Base Setup & Background Hearts */
+        /* Base Setup & Background Floating Hearts */
         body {
             background-color: #fff5f5;
             font-family: 'Arial', sans-serif;
@@ -17,7 +17,7 @@
             position: relative;
         }
 
-        /* CSS Heart Background Animation System */
+        /* CSS Floating Heart Background System */
         .background-hearts {
             position: fixed;
             top: 0;
@@ -31,7 +31,7 @@
         .bg-heart {
             position: absolute;
             bottom: -50px;
-            background-color: rgba(255, 77, 109, 0.15);
+            background-color: rgba(255, 77, 109, 0.12);
             display: inline-block;
             height: 30px;
             margin: 0 10px;
@@ -41,7 +41,7 @@
         }
         .bg-heart:before, .bg-heart:after {
             content: "";
-            background-color: rgba(255, 77, 109, 0.15);
+            background-color: rgba(255, 77, 109, 0.12);
             border-radius: 50%;
             height: 30px;
             position: absolute;
@@ -57,65 +57,37 @@
             100% { transform: translateY(-105vh) rotate(-45deg); opacity: 0; }
         }
 
-        /* Candle Landing Overlay Screen */
-        #candle-overlay {
+        /* 1. INTRO GIFT SCREEN OVERLAY */
+        #intro-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background: #fff5f5;
-            z-index: 2000;
+            z-index: 3000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease;
+            transition: opacity 0.8s ease;
         }
-        .candle-container {
+        .gift-box {
+            font-size: 5rem;
             cursor: pointer;
-            position: relative;
-            width: 60px;
-            height: 140px;
+            transition: transform 0.3s ease;
+            animation: bounceGift 2s infinite ease-in-out;
         }
-        .candle-stick {
-            width: 24px;
-            height: 80px;
-            background: #ffb3c1;
-            border-radius: 4px;
-            position: absolute;
-            bottom: 0;
-            left: 18px;
+        .gift-box:hover {
+            transform: scale(1.15);
         }
-        .candle-wick {
-            width: 2px;
-            height: 12px;
-            background: #444;
-            position: absolute;
-            top: 48px;
-            left: 29px;
-        }
-        .candle-flame {
-            width: 16px;
-            height: 26px;
-            background: #ffb703;
-            border-radius: 50% 50% 20% 20%;
-            position: absolute;
-            top: 24px;
-            left: 22px;
-            box-shadow: 0 0 15px #ffb703;
-            animation: flicker 0.1s ease-in-out infinite alternate;
-        }
-        @keyframes flicker {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.08) rotate(2deg); }
+        @keyframes bounceGift {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         /* Unserious Emoji Confetti */
         .confetti-emoji {
             position: fixed;
             font-size: 2rem;
-            z-index: 2001;
+            z-index: 3001;
             pointer-events: none;
             animation: scatter 1.2s ease-out forwards;
         }
@@ -124,30 +96,13 @@
             100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
         }
 
-        /* Bottom Right Custom Date Stamp */
-        .footer-date-stamp {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #ff4d6d;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 10px;
-            border-radius: 10px;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        /* Original App CSS Structure */
-        .header { padding: 40px 20px; }
-        h1 { color: #ff4d6d; }
-        
+        /* Dynamic Navigation Bar & Tabs */
         .tabs {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         .tab-btn {
             background-color: #ffb3c1;
@@ -161,6 +116,18 @@
         }
         .tab-btn:hover, .tab-btn.active { background-color: #ff4d6d; }
         
+        /* The Unlockable Secret Tab Styling */
+        #secret-tab-btn {
+            background-color: #9a4858;
+            display: none; /* Initially Hidden */
+            animation: glowPulse 2s infinite alternate;
+        }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 5px #ff4d6d; }
+            100% { box-shadow: 0 0 18px #ff4d6d; }
+        }
+
+        /* Layout Container Sections */
         .content-section {
             background: white;
             max-width: 700px;
@@ -168,9 +135,13 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            position: relative;
         }
         .hidden { display: none; }
+        .header { padding: 40px 20px; }
+        h1 { color: #ff4d6d; }
 
+        /* Secret Letter System Layouts */
         .letter-envelope {
             background-color: #ffe5ec;
             border: 2px dashed #ff4d6d;
@@ -220,6 +191,96 @@
             margin-left: 5px;
         }
 
+        /* SUPER SECRET LAB VIEW (Heart Animation + Candle) */
+        .super-secret-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 450px;
+            position: relative;
+        }
+
+        /* Pure CSS Heartbeat Pulse Graphic (Based on repo design) */
+        .beating-heart-graphic {
+            background-color: #ff4d6d;
+            display: inline-block;
+            height: 70px;
+            width: 70px;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: pulseHeart 0.8s infinite alternate ease-in-out;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+        }
+        .beating-heart-graphic:before, .beating-heart-graphic:after {
+            content: "";
+            background-color: #ff4d6d;
+            border-radius: 50%;
+            height: 70px;
+            position: absolute;
+            width: 70px;
+        }
+        .beating-heart-graphic:before { top: -35px; left: 0; }
+        .beating-heart-graphic:after { left: 35px; top: 0; }
+
+        @keyframes pulseHeart {
+            0% { transform: scale(1) rotate(-45deg); }
+            100% { transform: scale(1.18) rotate(-45deg); }
+        }
+
+        /* Main Screen Interactive Candle */
+        .candle-container {
+            cursor: pointer;
+            position: relative;
+            width: 60px;
+            height: 120px;
+            margin: 20px auto;
+        }
+        .candle-stick {
+            width: 20px;
+            height: 70px;
+            background: #ffb3c1;
+            border-radius: 4px;
+            position: absolute;
+            bottom: 0; left: 20px;
+        }
+        .candle-wick {
+            width: 2px;
+            height: 10px;
+            background: #444;
+            position: absolute;
+            top: 42px; left: 29px;
+        }
+        .candle-flame {
+            width: 14px;
+            height: 24px;
+            background: #ffb703;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: 20px; left: 23px;
+            box-shadow: 0 0 15px #ffb703;
+            animation: flicker 0.1s ease-in-out infinite alternate;
+        }
+        @keyframes flicker {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08) rotate(2deg); }
+        }
+
+        /* Fixed Date Corner Stamp */
+        .footer-date-stamp {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ff4d6d;
+            background: #ffe5ec;
+            padding: 4px 10px;
+            border-radius: 10px;
+        }
+
+        /* Photo Dump Elements */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -250,6 +311,7 @@
         .lightbox-content { max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2.5rem; font-weight: bold; cursor: pointer; }
 
+        /* Jigsaw Puzzle Structure */
         #puzzle-board {
             position: relative;
             width: 500px; height: 500px;
@@ -278,35 +340,31 @@
 </head>
 <body>
 
-    <!-- FALLING HEART ANIMATION BACKGROUND WRAPPER -->
+    <!-- BACKGROUND FLOATING HEARTS -->
     <div class="background-hearts" id="heartsContainer"></div>
 
-    <!-- CANDLE INTERACTIVE BLOWOUT OVERLAY SYSTEM -->
-    <div id="candle-overlay">
-        <h2 style="color: #ff4d6d; margin-bottom: 5px;">Make a wish... 🥺</h2>
-        <p style="color: #666; margin-bottom: 30px; font-size: 0.9rem;">(Click the flame to blow out the candle)</p>
-        <div class="candle-container" onclick="blowCandle(event)">
-            <div class="candle-flame" id="flame"></div>
-            <div class="candle-wick"></div>
-            <div class="candle-stick"></div>
-        </div>
+    <!-- 1. INTRO SYSTEM: CLICK GIFT TO OPEN SITE -->
+    <div id="intro-overlay">
+        <h2 style="color: #ff4d6d; margin-bottom: 20px;">You have received a gift! 🎁</h2>
+        <div class="gift-box" onclick="openGiftBox(event)">🎁</div>
+        <p style="color: #888; margin-top: 15px; font-size: 0.9rem;">(Click the gift box to open)</p>
     </div>
-
-    <!-- DATE STAMP FIXED AT THE BOTTOM RIGHT -->
-    <div class="footer-date-stamp">07/11/2026</div>
 
     <div class="header">
         <h1>Happy Birthday to YOUUU Lilou 🎂(choco)</h1>
         <p>I made this simple coding just for you so.. low expectation please 🙏 </p>
     </div>
 
+    <!-- CORE SITE NAVIGATION BAR -->
     <div class="tabs">
         <button class="tab-btn" onclick="showSection('letters')">SECETS Letters</button>
         <button class="tab-btn" onclick="showSection('photos')">Photosss</button>
         <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
+        <!-- UNLOCKED LATER BY THE 5TH LETTER PASSWORD -->
+        <button class="tab-btn" id="secret-tab-btn" onclick="showSection('secret')">Super Secret ❤️</button>
     </div>
 
-    <!-- 1. HOME SECTION -->
+    <!-- HOME CONTENT WRAPPER -->
     <div id="home-section" class="content-section">
         <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
         <p>Take your time exploring each one.(super pls)</p>
@@ -316,6 +374,7 @@
     <div id="letters-section" class="content-section hidden">
         <h3>💌 Your Secret Letters</h3>
         <p>Click an envelope to open it wink wink</p>
+        
         <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
         <div id="letter1" class="letter-content">Dear Lilou, HIIII I AM HOPING YOU ARE READING THIS IN CHRONOLOGICAL ORDER..Happy 15th birthday! See, now that you're finally 15, our age gap doesn't look quite as wild as 14 to 17... though I guess that just lasts until next year..shucks
 
@@ -363,15 +422,13 @@ Happy 15th birthday, my favorite person. Keep your heads up, don't give up even 
             <button class="pw-btn" onclick="checkLetterPassword()">Unlock</button>
             <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
         </div>
-        <!-- UPDATED VALUE INSIDE THE 5TH LETTER SYSTEM -->
+        
+        <!-- CONTENT OF LETTER 5 WRAPPED IN SECRET CODE SPECIFICATIONS -->
         <div id="letter5" class="letter-content">Happy birthday, baby ❤️
 
 To finally finish and open your last gift, you need to answer this riddle:
 
-"I gloom into the silence for you to have to go tonight, why must time be a bitch at the worst seconds. I grithed my teeth and showed no mercy for I went to the end of the story to write a misery. It was a punishment for you to do, I hope THIS reminds you of me everytime you go."
-
-The secret inside code is: Star
-(Keep in mind that the first letter is capitalized!)</div>
+"I gloom into the silence for you to have to go tonight, why must time be a bitch at the worst seconds. I grithed my teeth and showed no mercy for I went to the end of the story to write a misery. It was a punishment for you to do, I hope THIS reminds you of me everytime you go."</div>
     </div>
 
     <!-- 3. PHOTOS SECTION -->
@@ -445,9 +502,30 @@ The secret inside code is: Star
         </div>
     </div>
 
+    <!-- 5. SUPER SECRET ACTIVE VIEW -->
+    <div id="secret-section" class="content-section hidden">
+        <div class="super-secret-container">
+            <!-- Pulsing heart custom code implementation -->
+            <div class="beating-heart-graphic"></div>
+            
+            <h2 style="color: #ff4d6d; margin: 10px 0 0 0;">happy birthday, baby</h2>
+            
+            <!-- Interactive candle built right into this screen view -->
+            <div class="candle-container" onclick="blowCandleSecret(event)">
+                <div class="candle-flame" id="secret-flame"></div>
+                <div class="candle-wick"></div>
+                <div class="candle-stick"></div>
+            </div>
+            <p id="candle-tip-text" style="color: #777; font-size: 0.85rem; margin-top:-5px;">(Click the flame to blow it out!)</p>
+            
+            <!-- Context Date Display located right at the panel bottom -->
+            <div class="footer-date-stamp">07/11/2026</div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
-        // BACKGROUND HEART CREATOR ENGINE
+        // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
             const container = document.getElementById('heartsContainer');
             const heartCount = 25; 
@@ -463,21 +541,26 @@ The secret inside code is: Star
         }
         window.addEventListener('DOMContentLoaded', initHeartsBackground);
 
-        // INTERACTIVE CANDLE & CONFETTI ENGINE
-        function blowCandle(event) {
-            document.getElementById('flame').style.display = 'none';
-            
-            // Generate unserious emoji confetti particles
-            const emojis = ['🎉', '✨', '💖', '🧁', '🍰', '🌸'];
-            for (let i = 0; i < 40; i++) {
+        // INTRO BOX MECHANICS
+        function openGiftBox(event) {
+            spawnConfetti(event.clientX, event.clientY);
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 800);
+        }
+
+        // CONFETTI ENGINE
+        function spawnConfetti(clientX, clientY) {
+            const emojis = ['🎉', '✨', '💖', '🧁', '🌸', '🎁'];
+            for (let i = 0; i < 35; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti-emoji';
                 confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                confetti.style.left = event.clientX + 'px';
-                confetti.style.top = event.clientY + 'px';
+                confetti.style.left = clientX + 'px';
+                confetti.style.top = clientY + 'px';
                 
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 100 + Math.random() * 200;
+                const distance = 80 + Math.random() * 180;
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
                 
@@ -487,21 +570,33 @@ The secret inside code is: Star
                 document.body.appendChild(confetti);
                 setTimeout(() => confetti.remove(), 1200);
             }
-
-            // Cleanly fade away the landing cover
-            const overlay = document.getElementById('candle-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 1000);
         }
 
-        // NAVIGATION SYSTEM
+        // BLOW OUT CANDLE IN SUPER SECRET VIEW
+        function blowCandleSecret(event) {
+            const flame = document.getElementById('secret-flame');
+            if(flame.style.display === 'none') return; // already blown out
+            
+            flame.style.display = 'none';
+            document.getElementById('candle-tip-text').innerText = "Make a wish! 🌟";
+            spawnConfetti(event.clientX, event.clientY);
+        }
+
+        // TAB NAVIGATION SYSTEM
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
             document.getElementById('letters-section').classList.add('hidden');
             document.getElementById('photos-section').classList.add('hidden');
             document.getElementById('puzzle-section').classList.add('hidden');
+            document.getElementById('secret-section').classList.add('hidden');
+            
             document.getElementById(sectionName + '-section').classList.remove('hidden');
             
+            // Manage Active Tab Highlight States
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
             if(sectionName === 'puzzle') {
                 initPuzzle();
             }
@@ -525,6 +620,7 @@ The secret inside code is: Star
             document.getElementById('pw-error').style.display = "none";
         }
 
+        // PASSWORD VALIDATION ENGINE (TRIGGERS SECRET ACCESS BUTTON)
         function checkLetterPassword() {
             const userInput = document.getElementById('letter5-password').value;
             const errorMsg = document.getElementById('pw-error');
@@ -537,11 +633,15 @@ The secret inside code is: Star
                 gate.style.display = "none"; 
                 letter.style.display = "block"; 
                 errorMsg.style.display = "none";
+                
+                // UNLOCK SUPER SECRET BUTTON INTERFACE ELEMENT
+                document.getElementById('secret-tab-btn').style.display = "inline-block";
             } else {
                 errorMsg.style.display = "block"; 
             }
         }
 
+        // IMAGE LIGHTBOX
         function openLightbox(element) {
             const imgSrc = element.querySelector('img').src;
             document.getElementById('lightboxImg').src = imgSrc;
@@ -552,7 +652,7 @@ The secret inside code is: Star
             document.getElementById('lightboxOverlay').style.display = 'none';
         }
 
-        // JIGSAW PUZZLE CONFIG
+        // 5x5 DRAG AND DROP JIGSAW ENGINE
         const rows = 5;
         const cols = 5;
         const pieceSize = 100; 
