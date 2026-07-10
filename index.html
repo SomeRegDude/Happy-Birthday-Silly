@@ -73,31 +73,49 @@
             white-space: pre-line;
         }
 
-        /* 6x6 PUZZLE ENGINE STYLING */
+        /* 6x6 JIGSAW PUZZLE STYLING */
         #puzzle-container {
             display: grid;
             grid-template-columns: repeat(6, 50px);
             grid-template-rows: repeat(6, 50px);
-            gap: 1px;
+            gap: 0px; /* Kept tight so tabs interlock visually */
             justify-content: center;
-            background-color: #ffb3c1;
-            padding: 5px;
-            border-radius: 10px;
-            width: 305px;
+            background-color: #ffe5ec;
+            padding: 10px;
+            border-radius: 15px;
+            width: 300px;
             margin: 20px auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
         .tile {
             width: 50px;
             height: 50px;
-            background-image: url('puzzle.jpg.png');
+            background-image: url('puzzle.jpg.png'); /* Updated to match your filename */
             background-size: 300px 300px;
             cursor: pointer;
-            border-radius: 2px;
-            transition: all 0.1s;
+            box-sizing: border-box;
+            
+            /* The Magic: This shapes the straight borders into alternating jigsaw tabs */
+            border-radius: 14px; 
+            outline: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.4), inset -2px -2px 4px rgba(0,0,0,0.2);
         }
+        
+        /* Alternate puzzle cuts using CSS border radii to mimic interlocking shapes */
+        .tile:nth-child(odd) {
+            border-top-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+        .tile:nth-child(even) {
+            border-top-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
         .tile.empty {
             background-image: none !important;
             background-color: #fff5f5;
+            box-shadow: none;
+            outline: 2px dashed #ffb3c1;
             cursor: default;
         }
         #win-message {
@@ -125,11 +143,13 @@
         <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
     </div>
 
+    <!-- 1. HOME SECTION -->
     <div id="home-section" class="content-section">
         <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
         <p>Take your time exploring each one.(super pls)</p>
     </div>
 
+    <!-- 2. SECRETS LETTERS SECTION -->
     <div id="letters-section" class="content-section hidden">
         <h3>💌 Your Secret Letters</h3>
         <p>Click an envelope to open it!</p>
@@ -145,14 +165,16 @@
         <div id="letter5" class="letter-content">Happy Birthday,\n\n[Type message 5 here...]</div>
     </div>
 
+    <!-- 3. PHOTOS SECTION -->
     <div id="photos-section" class="content-section hidden">
         <h3>📸 Photosss Coming Soon</h3>
         <p>This is where we will add our favorite memories next!</p>
     </div>
 
+    <!-- 4. PUZZLE SECTION -->
     <div id="puzzle-section" class="content-section hidden">
-        <h3>🧩 Solve the 6x6 Master Puzzle to unlock your message!</h3>
-        <p>Click pieces next to the empty space to slide them.</p>
+        <h3>🧩 Solve the 6x6 Jigsaw Style Puzzle to unlock your message!</h3>
+        <p>Click pieces next to the empty space to slide and interlock them.</p>
         
         <div id="puzzle-container"></div>
         <button class="tab-btn" onclick="scramblePuzzle()" style="margin-top:10px;">Scramble Again</button>
@@ -163,6 +185,7 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT -->
     <script>
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
@@ -182,12 +205,11 @@
         // 6x6 PUZZLE LOGIC
         const GRID_SIZE = 6;
         const TILE_COUNT = GRID_SIZE * GRID_SIZE;
-        const EMPTY_INDEX = TILE_COUNT - 1; // 35 is the empty slot
+        const EMPTY_INDEX = TILE_COUNT - 1; 
 
         let tiles = [];
         let correctOrder = [];
 
-        // Generate arrays dynamically for 6x6
         for (let i = 0; i < TILE_COUNT; i++) {
             tiles.push(i);
             correctOrder.push(i);
@@ -211,7 +233,6 @@
                 } else {
                     const row = Math.floor(tileIdx / GRID_SIZE);
                     const col = tileIdx % GRID_SIZE;
-                    // Move background position by 50px segments
                     tile.style.backgroundPosition = `-${col * 50}px -${row * 50}px`;
                     tile.onclick = () => moveTile(currentPos);
                 }
@@ -222,7 +243,6 @@
 
         function scramblePuzzle() {
             document.getElementById('win-message').style.display = 'none';
-            // Shuffle array
             for (let i = tiles.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
@@ -234,10 +254,10 @@
             const emptyPos = tiles.indexOf(EMPTY_INDEX);
             const validMoves = [];
             
-            if (pos % GRID_SIZE > 0) validMoves.push(pos - 1);         // Left
-            if (pos % GRID_SIZE < GRID_SIZE - 1) validMoves.push(pos + 1); // Right
-            if (pos > GRID_SIZE - 1) validMoves.push(pos - GRID_SIZE);     // Up
-            if (pos < TILE_COUNT - GRID_SIZE) validMoves.push(pos + GRID_SIZE); // Down
+            if (pos % GRID_SIZE > 0) validMoves.push(pos - 1);         
+            if (pos % GRID_SIZE < GRID_SIZE - 1) validMoves.push(pos + 1); 
+            if (pos > GRID_SIZE - 1) validMoves.push(pos - GRID_SIZE);     
+            if (pos < TILE_COUNT - GRID_SIZE) validMoves.push(pos + GRID_SIZE); 
 
             if (validMoves.includes(emptyPos)) {
                 [tiles[pos], tiles[emptyPos]] = [tiles[emptyPos], tiles[pos]];
