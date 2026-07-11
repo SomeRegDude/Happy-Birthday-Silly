@@ -913,6 +913,11 @@
                     drawHeart(ctx, b.endX, b.endY, 11, '#ff4d6d');
                     drawHeart(ctx, b.endX - 4, b.endY - 5, 8, '#ff758f');
                     drawHeart(ctx, b.endX + 4, b.endY - 5, 8, '#ff8fa3');
+                    
+                    // Flourishing side offsets for fuller foliage visual profile
+                    drawHeart(ctx, b.endX - 15, b.endY + 4, 7, '#ffb3c1');
+                    drawHeart(ctx, b.endX + 10, b.endY + 4, 7, '#ffccd5');
+                    drawHeart(ctx, b.endX - 6, b.endY - 11, 6, '#ff4d6d');
 
                 }
             });
@@ -949,9 +954,9 @@
                         if (!isTerminal) {
                             const subBranches = 3 + Math.floor(Math.random() * 2);
                             for (let j = 0; j < subBranches; j++) {
-                                const nextAngle = b.angle + (Math.random() * 0.8 - 0.4);
-                                const nextLength = b.length * (0.7 + Math.random() * 0.15);
-                                const nextThickness = b.thickness * 0.7;
+                                const nextAngle = b.angle + (Math.random() * 1.4 - 0.7);
+                                const nextLength = b.length * (0.78 + Math.random() * 0.15);
+                                const nextThickness = b.thickness * 0.75;
                                 
                                 nextQueue.push({
                                     startX: endX, startY: endY,
