@@ -1,557 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My silly baby</title>
-    <style>
-        /* Base Setup & Background Floating Hearts */
-        body {
-            background-color: #fff5f5;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            user-select: none;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* CSS Floating Heart Background System */
-        .background-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .bg-heart {
-            position: absolute;
-            bottom: -50px;
-            background-color: rgba(255, 77, 109, 0.12);
-            display: inline-block;
-            height: 30px;
-            margin: 0 10px;
-            transform: rotate(-45deg);
-            width: 30px;
-            animation: floatUp 10s linear infinite;
-        }
-        .bg-heart:before, .bg-heart:after {
-            content: "";
-            background-color: rgba(255, 77, 109, 0.12);
-            border-radius: 50%;
-            height: 30px;
-            position: absolute;
-            width: 30px;
-        }
-        .bg-heart:before { top: -15px; left: 0; }
-        .bg-heart:after { left: 15px; top: 0; }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(-45deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-105vh) rotate(-45deg); opacity: 0; }
-        }
-
-        /* 1. INTRO GIFT SCREEN OVERLAY */
-        #intro-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #fff5f5;
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease;
-        }
-        .gift-box {
-            font-size: 5rem;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            animation: bounceGift 2s infinite ease-in-out;
-        }
-        .gift-box:hover {
-            transform: scale(1.15);
-        }
-        @keyframes bounceGift {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        /* Unserious Emoji Confetti */
-        .confetti-emoji {
-            position: fixed;
-            font-size: 2rem;
-            z-index: 3001;
-            pointer-events: none;
-            animation: scatter 1.2s ease-out forwards;
-        }
-        @keyframes scatter {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
-        }
-
-        /* Dynamic Navigation Bar & Tabs */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            background-color: #ffb3c1;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .tab-btn:hover, .tab-btn.active { background-color: #ff4d6d; }
-        
-        /* The Unlockable Secret Tab Styling */
-        #secret-tab-btn {
-            background-color: #9a4858;
-            display: none; 
-            animation: glowPulse 2s infinite alternate;
-        }
-        @keyframes glowPulse {
-            0% { box-shadow: 0 0 5px #ff4d6d; }
-            100% { box-shadow: 0 0 18px #ff4d6d; }
-        }
-
-        /* Layout Container Sections */
-        .content-section {
-            background: white;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            position: relative;
-        }
-        .hidden { display: none; }
-        .header { padding: 40px 20px; }
-        h1 { color: #ff4d6d; }
-
-        /* Secret Letter System Layouts */
-        .letter-envelope {
-            background-color: #ffe5ec;
-            border: 2px dashed #ff4d6d;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #ff4d6d;
-        }
-        .letter-content {
-            display: none;
-            background: #fffdf9;
-            border-left: 4px solid #ff4d6d;
-            padding: 15px;
-            margin-top: 10px;
-            text-align: left;
-            font-style: italic;
-            line-height: 1.6;
-            white-space: pre-line;
-        }
-
-        .password-gate {
-            display: none;
-            background: #fffdf9;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #ffb3c1;
-        }
-        .pw-input {
-            padding: 8px 12px;
-            border: 2px solid #ffb3c1;
-            border-radius: 15px;
-            outline: none;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        .pw-input:focus { border-color: #ff4d6d; }
-        .pw-btn {
-            background-color: #ff4d6d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 15px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        /* Photo Dump Elements */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .photo-card {
-            position: relative;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .photo-card:hover { transform: scale(1.03); border-color: #ffb3c1; }
-        .photo-card img { width: 100%; height: 100%; object-fit: cover; }
-
-        .lightbox {
-            display: none;
-            position: fixed;
-            z-index: 2999;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            justify-content: center; align-items: center;
-        }
-        .lightbox-content { max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2.5rem; font-weight: bold; cursor: pointer; }
-
-        /* Jigsaw Puzzle Structure */
-        #puzzle-board {
-            position: relative;
-            width: 500px; height: 500px;
-            margin: 20px auto;
-            background: #fafafa;
-            border: 2px dashed #ffb3c1;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .puzzle-piece {
-            position: absolute;
-            width: 100px; height: 100px; 
-            background-image: url('puzzle.jpg');
-            background-size: 500px 500px;
-            cursor: grab;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
-            z-index: 2;
-        }
-        .puzzle-piece:active { cursor: grabbing; box-shadow: 0 5px 15px rgba(0,0,0,0.4); z-index: 10; }
-        #win-message {
-            display: none; color: #ff4d6d; font-size: 1.2rem; margin-top: 15px;
-            background: #ffe5ec; padding: 15px; border-radius: 8px; font-weight: bold;
-        }
-
-        /* =====================================================================
-           5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
-           ===================================================================== */
-        #universe-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: #fffbfa;
-            z-index: 2500; 
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        #universe-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #loveTreeCanvas {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-        }
-        .universe-ui {
-            position: relative;
-            z-index: 2;
-            color: #ff4d6d;
-            text-align: center;
-            pointer-events: none;
-            margin-top: auto;
-            margin-bottom: 40px;
-        }
-        .back-to-site-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 12; 
-            background: rgba(255, 179, 193, 0.7);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .back-to-site-btn:hover { background: #ff4d6d; }
-
-        /* Candle Styling Rules */
-        #candle-gate {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(18, 11, 14, 0.96);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1.2s ease-in-out;
-        }
-        .candle-container {
-            position: relative;
-            width: 60px; height: 140px;
-            cursor: pointer;
-        }
-        .candle-body {
-            position: absolute;
-            bottom: 20px; left: 18px;
-            width: 24px; height: 80px;
-            background: linear-gradient(to right, #ffccd5, #ffb3c1);
-            border-radius: 4px;
-        }
-        .candle-wick {
-            position: absolute;
-            bottom: 100px; left: 29px;
-            width: 2px; height: 12px;
-            background-color: #444;
-        }
-        .flame {
-            position: absolute;
-            bottom: 110px; left: 22px;
-            width: 16px; height: 26px;
-            background: radial-gradient(ellipse at bottom, #ffeb3b 0%, #ff5722 70%, transparent 100%);
-            border-radius: 50% 50% 20% 20%;
-            transform-origin: bottom center;
-            animation: flicker 1.5s infinite alternate ease-in-out;
-            box-shadow: 0 0 20px #ff5722, 0 0 40px #ffeb3b;
-        }
-        .candle-stand {
-            position: absolute;
-            bottom: 12px; left: 5px;
-            width: 50px; height: 8px;
-            background-color: #d8f3dc;
-            border-radius: 4px;
-        }
-        @keyframes flicker {
-            0% { transform: scale(1) rotate(-1deg); }
-            100% { transform: scale(1.08) rotate(1.5deg); }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- BACKGROUND FLOATING HEARTS -->
-    <div class="background-hearts" id="heartsContainer"></div>
-
-    <!-- 1. INTRO SYSTEM: CLICK GIFT TO OPEN SITE -->
-    <div id="intro-overlay">
-        <h2 style="color: #ff4d6d; margin-bottom: 20px;">You have received a gift! 🎁</h2>
-        <div class="gift-box" onclick="openGiftBox(event)">🎁</div>
-        <p style="color: #888; margin-top: 15px; font-size: 0.9rem;">(Click the gift box to open)</p>
-    </div>
-
-    <!-- MAIN CORE WEB INTERFACE WRAPPER -->
-    <div id="main-site-wrapper">
-        <div class="header">
-            <h1>Happy Birthday to YOUUU Lilou 🎂(choco)</h1>
-            <p>I made this simple coding just for you so.. low expectation please 🙏 </p>
-        </div>
-
-        <!-- CORE SITE NAVIGATION BAR -->
-        <div class="tabs">
-            <button class="tab-btn" onclick="showSection('letters')">SECETS Letters</button>
-            <button class="tab-btn" onclick="showSection('photos')">Photosss</button>
-            <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
-            <!-- UNLOCKED LATER BY THE 5TH LETTER PASSWORD -->
-            <button class="tab-btn" id="secret-tab-btn" onclick="launchUniverseOverlay()">Super Secret ❤️</button>
-        </div>
-
-        <!-- HOME CONTENT WRAPPER -->
-        <div id="home-section" class="content-section">
-            <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
-            <p>Take your time exploring each one.(super pls)</p>
-        </div>
-
-        <!-- 2. SECRETS LETTERS SECTION -->
-        <div id="letters-section" class="content-section hidden">
-            <h3>💌 Your Secret Letters</h3>
-            <p>Click an envelope to open it wink wink</p>
-            
-            <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
-            <div id="letter1" class="letter-content">Dear Lilou, HIIII I AM HOPING YOU ARE READING THIS IN CHRONOLOGICAL ORDER..Happy 15th birthday! See, now that you're finally 15, our age gap doesn't look quite as wild as 14 to 17... though I guess that just lasts until next year..shucks
-
-    You've helped me get through so many things that you don't even realize. It's so easy for me to love you because you're the one person I can trust to have my back, no question. I am so lucky that I get to greet you today, and I am so thankful that you keep pushing through every single day. Even with your promise to me to not do anything harsh, choosing to live and stay strong when things get heavy is a massive decision. You make me so incredibly happy just by being here.
-
-    I know I don't know absolutely everything about you yet, and there's still so much left for me to see and know. But I am so glad I get to watch you grow over the next few years from now on. Who knows, maybe one day I'll look over and find out you're actually left-handed or something.
-
-    Thank you for being in my life, nene(get it cause it's what you are using rn). Thank you for living. I love you, and I really hope I get to greet you on your next birthday just like this.</div>
-            
-            <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
-            <div id="letter2" class="letter-content">How Much I Love You (The Website is Just a Little Thing)
-    Hey Ren(with a bunch of n so it doesn't look threatening),
-
-    Happy Birthday! I hope you're liking your little corner of the internet so far.(rate me as a 5 star crammer)
-
-    I know building this website might seem like a lot, but honestly? It's just a tiny, little thing compared to how much I actually want to do for you. If I could code a whole universe just to make you smile on your birthday, I’d probably try to do that too (though the bugs would be a nightmare).
-
-    I want you to know how deeply I love you. There really isn't a limit to the lengths I would go just to make sure you feel safe, happy, and cared for, and I hope you know that. This site is just a small reflection of a little corner in the internet of new memories and secret notes because you deserve to have things made just for you. You deserve the absolute world, Ren. Mwahh
-
-    Enjoy your day, your cake, the mall, and remember that I’m always in your corner, cheering you on. This is just the beginning of the things I want to do for you.</div>
-            
-            <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
-            <div id="letter3" class="letter-content">Dear Rhiane,
-
-    This letter is a serious one, because I want to make sure you know exactly where my head and my heart are at. (with very serious monotone)
-
-    Even though we have this label of being "reserved" right now, I want you to know that I don't mind it at all. To me, it's as real as it gets, frfr. I am completely dead set and 100% sure about you. I don't want anybody else, and I am choosing to be completely, exclusively yours during these next few, just talking and having fun with each other prescence
-
-    When those 4 years are finally over, my plan would never change, I want to court you properly. I'm willing to wait even if I am impatient but for you I will change, to grow not just me, but you also so us:3, and to be right here beside you through all of it because you are what I call the goal of my life. You are the only person I want to look forward to.
-
-    Happy 15th birthday, my favorite person. Keep your heads up, don't give up even if it gets outrociously bad, don't blame yourself and I’m so glad I get to be somebody that you can call yours without feeling embarassed, I love you so much.</div>
-
-            <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
-            <div id="letter4" class="letter-content">HIII LEE, this is purely assuming that you are reading the letter first or that you completely skipped this and immediately went for the puzzle, well anyway 
-            This simply just serves as a hint! since it is a bit tedious to do all of this on your own, and since it is indeed your birthday so I will tell you what to do, so 
-            Trust me and just finish the puzzle, if you are wondering how you are going to do that... well it is one of the image in photos, I assume after seeing or realizing that you won't need other more hints... goodluck at the end of this puzzle there will
-            be another special thing for you, if you recognize it congratulation pffff, yes it is one of your repost which gave me the idea to make a website in the first place. Anyway enough yapping go solve the code or that you already did it, Mwahhh</div>
-            
-            <!-- Password locked envelope -->
-            <div class="letter-envelope" onclick="togglePasswordGate()">🔒 Secret Letter #5 (Password Locked!)</div>
-            <div id="letter5-gate" class="password-gate">
-                <input type="password" id="letter5-password" class="pw-input" placeholder="Enter secret code...">
-                <button class="pw-btn" onclick="checkLetterPassword()">Unlock</button>
-                <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
-            </div>
-            
-            <!-- CONTENT OF LETTER 5 -->
-            <div id="letter5" class="letter-content">Happy birthday, baby ❤️
-
-    To finally finish and open your last gift, you need to answer this riddle:
-
-    "I gloom into the silence for you to have to go tonight, why must time be a bitch at the worst seconds. I grithed my teeth and showed no mercy for I went to the end of the story to write a misery. It was a punishment for you to do, I hope THIS reminds you of me everytime you go."</div>
-        </div>
-
-        <!-- 3. PHOTOS SECTION -->
-        <div id="photos-section" class="content-section hidden">
-            <h3>📸 Just.. my photo dump atp</h3>
-            <p>Click any photo to open it full size or not....this is embarassing AAa</p>
-            
-            <div class="photo-grid">
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (1).jpg" alt="Memory 1"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (2).jpg" alt="Memory 2"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (3).jpg" alt="Memory 3"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (4).jpg" alt="Memory 4"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (5).jpg" alt="Memory 5"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (6).jpg" alt="Memory 6"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (7).jpg" alt="Memory 7"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (8).jpg" alt="Memory 8"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (9).jpg" alt="Memory 9"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (10).jpg" alt="Memory 10"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (11).jpg" alt="Memory 11"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (12).jpg" alt="Memory 12"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (13).jpg" alt="Memory 13"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (14).jpg" alt="Memory 14"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (15).jpg" alt="Memory 15"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (16).jpg" alt="Memory 16"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (17).jpg" alt="Memory 17"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (18).jpg" alt="Memory 18"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (19).jpg" alt="Memory 19"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (20).jpg" alt="Memory 20"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (21).jpg" alt="Memory 21"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (22).jpg" alt="Memory 22"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (23).jpg" alt="Memory 23"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (24).jpg" alt="Memory 24"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (25).jpg" alt="Memory 25"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (26).jpg" alt="Memory 26"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (27).jpg" alt="Memory 27"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (28).jpg" alt="Memory 28"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (29).jpg" alt="Memory 29"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (30).jpg" alt="Memory 30"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (31).jpg" alt="Memory 31"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (32).jpg" alt="Memory 32"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (33).jpg" alt="Memory 33"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (34).jpg" alt="Memory 34"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (35).jpg" alt="Memory 35"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (36).jpg" alt="Memory 36"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (37).jpg" alt="Memory 37"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (38).jpg" alt="Memory 38"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (39).jpg" alt="Memory 39"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (40).jpg" alt="Memory 40"></div>
-                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (41).jpg" alt="Memory 41"></div>
-            </div>
-        </div>
-
-        <!-- 4. PUZZLE SECTION -->
-        <div id="puzzle-section" class="content-section hidden">
-            <h3>🧩 Drag the pieces back to their correct spots</h3>
-            <p>They will auto-snap and stick cleanly when you get them close enough.</p>
-            
-            <div id="puzzle-board"></div>
-            
-            <button class="tab-btn" onclick="initPuzzle()" style="margin-top:10px;">Scramble / Reset</button>
-
-            <div id="win-message">
-                🎉 GOOD JOB BABYYY 🎉<br>
-                "Congratulation you solved one of the first puzzle in this website(read the 4th letter if you solved this without hint pls). Yes, there are hidden codes but they will be shown when the time comes. For now use your birthday to open the 5th letter,month/day/year"
-            </div>
-        </div>
-    </div>
-
-    <!-- LIGHTBOX SYSTEM CONTAINER -->
-    <div id="lightboxOverlay" class="lightbox" onclick="closeLightbox()">
-        <span class="lightbox-close">&times;</span>
-        <img class="lightbox-content" id="lightboxImg">
-    </div>
-
-    <!-- =====================================================================
-       5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
-       ===================================================================== -->
-    <div id="universe-overlay">
-        <button class="back-to-site-btn" onclick="exitUniverseOverlay()">← Go Back</button>
-        
-        <!-- THE DARK CANDLE INTERACTION GATE LAYER -->
-        <div id="candle-gate">
-            <h3 style="color: #ffe5ec; font-size: 1.4rem; margin-bottom: 40px; text-shadow: 0 2px 10px rgba(255, 77, 109, 0.5);">
-                Make a wish and click the candle to blow it out... 🕯️
-            </h3>
-            <div class="candle-container" onclick="extinguishCandle(event)">
-                <div class="flame" id="candle-flame"></div>
-                <div class="candle-wick"></div>
-                <div class="candle-body"></div>
-                <div class="candle-stand"></div>
-            </div>
-        </div>
-
-        <canvas id="loveTreeCanvas"></canvas>
-        
-        <div class="universe-ui" id="universe-text" style="display: none;">
-            <h2 style="font-size: 2rem; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.05);">happy birthday, baby ❤️</h2>
-            <p style="font-size: 1rem; opacity: 0.8; margin: 0;">I love you. Always. (07/11/2026)</p>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT SYSTEM ENGINE -->
-    <script>
-        let loveTreeAnimId = null;
+let loveTreeAnimId = null;
         const branchQueue = [];
         const heartPetals = [];
         const scatteredLilies = [];
-        const petalsTotal = 150;
+        
+        // --- PERFORMANCE CONFIGURATION ---
+        const maxDriftingPetals = 45; // Cut down from 150 to keep canvas performance high
+        const leavesPerTip = 3;       // Reduced density to prevent rendering choke loops
+        let treeGrowthStartTime = 0;
+        const totalTreeGrowthDuration = 3500; // Complete organic tree build time (3.5 seconds)
 
         // Image loading instantiation for your specific custom image file
         const lilyImage = new Image();
@@ -562,7 +18,7 @@
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
             const container = document.getElementById('heartsContainer');
-            const heartCount = 25; 
+            const heartCount = 20; 
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
                 heart.className = 'bg-heart';
@@ -758,12 +214,11 @@
         }
 
         // =====================================================================
-        // UNIVERSE GENERATION LIBRARIES: INSTANT BRANCHES & BLOOMING LEAVES
+        // UNIVERSE GENERATION: CONTROLLED GROWTH TIMING & CACHED RENDER POOL
         // =====================================================================
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
             
-            // Show dark gate and burning candle
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '1';
             gate.style.pointerEvents = 'auto';
@@ -783,15 +238,12 @@
             document.getElementById('candle-flame').style.display = 'none';
             spawnConfetti(event.clientX, event.clientY);
 
-            // Open curtains animation
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '0';
             gate.style.pointerEvents = 'none';
 
-            // Reveal birthday text
             document.getElementById('universe-text').style.display = 'block';
 
-            // Start Tree & Heart Generation
             setTimeout(() => {
                 initUniverseTree();
             }, 600);
@@ -814,50 +266,50 @@
             heartPetals.length = 0;
             scatteredLilies.length = 0;
 
-            // Generate entire tree geometry structures instantly
-            createForkStructure(canvas.width / 2, canvas.height, 12, 100, -Math.PI / 2, 0);
+            // Generate full structural array framework layout definitions
+            createForkStructure(canvas.width / 2, canvas.height - 20, 14, 115, -Math.PI / 2, 0);
 
-            // Set all branch draws to fully processed instantly
-            branchQueue.forEach(b => {
-                b.drawProgress = b.length;
-                b.processed = true;
-            });
+            // Record dynamic timestamp offset markers
+            treeGrowthStartTime = performance.now();
 
-            // Pre-seed falling/drifting petal animations
-            for (let i = 0; i < petalsTotal; i++) {
+            // Seed optimized environmental falling/drifting petal animations
+            for (let i = 0; i < maxDriftingPetals; i++) {
                 heartPetals.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: 4 + Math.random() * 5,
-                    opacity: 0.2 + Math.random() * 0.6,
+                    size: 4 + Math.random() * 4,
+                    opacity: 0.2 + Math.random() * 0.5,
                     color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
-                    speedY: 0.5 + Math.random() * 1.5,
-                    speedX: (Math.random() - 0.5) * 1,
+                    speedY: 0.4 + Math.random() * 1.2,
+                    speedX: (Math.random() - 0.5) * 0.8,
                     waveOffset: Math.random() * 100,
                     state: 'drift'
                 });
             }
 
-            // Generate 12 random bottom spots for Lillies.png
+            // Generate 12 random base positions on the floor for Lilies.png
             for (let i = 0; i < 12; i++) {
                 scatteredLilies.push({
                     x: Math.random() * (canvas.width - 60) + 10,
-                    y: canvas.height - (30 + Math.random() * 40),
-                    width: 45 + Math.random() * 20,
-                    height: 45 + Math.random() * 20,
-                    opacity: 0 // Will fade in gently
+                    y: canvas.height - (35 + Math.random() * 35),
+                    width: 40 + Math.random() * 15,
+                    height: 40 + Math.random() * 15,
+                    opacity: 0
                 });
             }
 
             runUniverseEngineLoop();
         }
 
-        // Generate entire tree geometry into structure queue
+        // Mathematical branch structural tree array setup
         function createForkStructure(x, y, thick, len, angle, depth) {
-            if (depth > 11) return; 
+            if (depth > 10) return; 
 
             const x2 = x + Math.cos(angle) * len;
             const y2 = y + Math.sin(angle) * len;
+
+            // Sort depth execution timing allocations across our 3.5s window
+            const appearanceDelay = (depth / 10) * (totalTreeGrowthDuration * 0.7);
 
             branchQueue.push({
                 x1: x, y1: y,
@@ -866,29 +318,30 @@
                 length: len,
                 angle: angle,
                 depth: depth,
-                processed: false,
-                drawProgress: 0 
+                startTime: appearanceDelay
             });
 
-            if (depth < 11) {
-                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle - (0.15 + Math.random() * 0.25), depth + 1);
-                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle + (0.15 + Math.random() * 0.25), depth + 1);
+            if (depth < 10) {
+                createForkStructure(x2, y2, thick * 0.75, len * 0.82, angle - (0.16 + Math.random() * 0.22), depth + 1);
+                createForkStructure(x2, y2, thick * 0.75, len * 0.82, angle + (0.16 + Math.random() * 0.22), depth + 1);
                 
-                if(Math.random() > 0.7) {
-                    createForkStructure(x2, y2, thick * 0.6, len * 0.6, angle + (Math.random() * 0.4 - 0.2), depth + 1);
+                if(Math.random() > 0.75) {
+                    createForkStructure(x2, y2, thick * 0.55, len * 0.55, angle + (Math.random() * 0.4 - 0.2), depth + 1);
                 }
             } else {
-                // Terminal point reached: Spawn slow blooming leaves on branch tips
-                for (let k = 0; k < 6; k++) {
+                // Outer terminal nodes only: Sprouts lightweight blooming heart leaves
+                const baseSproutDelay = totalTreeGrowthDuration * 0.75;
+                for (let k = 0; k < leavesPerTip; k++) {
                     heartPetals.push({
-                        cx: x2 + (Math.random() * 30 - 15),
-                        cy: y2 + (Math.random() * 30 - 15),
-                        size: 4 + Math.random() * 5,
-                        opacity: 0.1,
-                        targetOpacity: 0.7 + Math.random() * 0.3,
+                        cx: x2 + (Math.random() * 24 - 12),
+                        cy: y2 + (Math.random() * 24 - 12),
+                        size: 4 + Math.random() * 4,
+                        opacity: 0,
+                        targetOpacity: 0.65 + Math.random() * 0.35,
                         color: Math.random() > 0.45 ? '#ff4d6d' : '#ffb3c1',
                         scale: 0.01,
                         targetScale: 1,
+                        sproutDelay: baseSproutDelay + (Math.random() * 1200),
                         state: 'bloom' 
                     });
                 }
@@ -898,38 +351,52 @@
         function runUniverseEngineLoop() {
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
+            const currentTime = performance.now();
+            const elapsedTreeTime = currentTime - treeGrowthStartTime;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw clean baseline backdrop floor
+            // Floor background backdrop layer
             const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 80);
             groundGrad.addColorStop(0, '#fbc4b6');
             groundGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = groundGrad;
             ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
 
-            // Render all trunk lines instantly
+            // DYNAMIC SEQUENTIAL TREE INTERPOLATION GROWER
             branchQueue.forEach(b => {
+                if (elapsedTreeTime < b.startTime) return; // Not ready to grow yet
+
+                // Determine local line growth progression interpolation factors
+                const durationPerBranch = 400; // Linear interpolation crawl ms speed
+                let factor = (elapsedTreeTime - b.startTime) / durationPerBranch;
+                if (factor > 1) factor = 1;
+
+                const currentX2 = b.x1 + (b.x2 - b.x1) * factor;
+                const currentY2 = b.y1 + (b.y2 - b.y1) * factor;
+
                 ctx.strokeStyle = '#3a221d'; 
                 ctx.lineWidth = b.thickness; 
                 ctx.lineCap = 'round';
                 ctx.beginPath(); 
                 ctx.moveTo(b.x1, b.y1); 
-                ctx.lineTo(b.x2, b.y2); 
+                ctx.lineTo(currentX2, currentY2); 
                 ctx.stroke();
             });
 
-            // Draw and slowly grow branch tips heart leaf physics
+            // RENDER OPTIMIZED LEAF ARRAYS
             heartPetals.forEach(p => {
                 if (p.state === 'bloom') {
-                    if (p.scale < p.targetScale) p.scale += 0.008; // Slower growth rate
-                    if (p.opacity < p.targetOpacity) p.opacity += 0.01;
+                    if (elapsedTreeTime < p.sproutDelay) return; // Wait for branch growth arrival
+                    
+                    if (p.scale < p.targetScale) p.scale += 0.015; 
+                    if (p.opacity < p.targetOpacity) p.opacity += 0.02;
                     drawHeartShapePetal(ctx, p.cx, p.cy, p.size * p.scale, p.color, p.opacity);
                 }
 
                 if (p.state === 'drift') {
                     p.y += p.speedY;
-                    p.x += p.speedX + Math.sin(p.y / 30 + p.waveOffset) * 0.5;
+                    p.x += p.speedX + Math.sin(p.y / 30 + p.waveOffset) * 0.4;
                     if (p.y > canvas.height) {
                         p.y = -20;
                         p.x = Math.random() * canvas.width;
@@ -938,10 +405,10 @@
                 }
             });
 
-            // RENDER SCATTERED LILIES ON THE GROUND
-            if (lilyImageLoaded) {
+            // RENDER LILIES GENTLY SCATTERED ACROSS FLOOR BASE
+            if (lilyImageLoaded && elapsedTreeTime > 1500) {
                 scatteredLilies.forEach(lily => {
-                    if (lily.opacity < 1) lily.opacity += 0.02; // Fade them in elegantly
+                    if (lily.opacity < 1) lily.opacity += 0.015;
                     ctx.save();
                     ctx.globalAlpha = lily.opacity;
                     ctx.drawImage(lilyImage, lily.x, lily.y, lily.width, lily.height);
@@ -952,7 +419,7 @@
             loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
         }
 
-        // CUSTOM VECTOR MATHEMATICAL HEART GRAPHICS
+        // VECTOR HEART RENDERING
         function drawHeartShapePetal(ctx, x, y, size, color, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha;
@@ -965,7 +432,7 @@
             ctx.restore();
         }
 
-        // Reset geometry matrices safely on viewport resize events
+        // Window resize framework handlers
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('loveTreeCanvas');
             if(canvas && document.getElementById('universe-overlay').classList.contains('active')) {
@@ -975,6 +442,3 @@
                 launchUniverseOverlay();
             }
         });
-    </script>
-</body>
-</html>
