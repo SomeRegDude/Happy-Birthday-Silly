@@ -288,7 +288,7 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            z-index: 12; /* Kept above everything on overlay frame */
+            z-index: 12; 
             background: rgba(255, 179, 193, 0.7);
             color: white;
             border: none;
@@ -519,7 +519,7 @@
     </div>
 
     <!-- =====================================================================
-       5. THE SUPER SECRET VIEW: CANDLE GATE + LOVE TREE + LILIES
+       5. THE SUPER SECRET VIEW: CANDLE GATE + PULSING HEART UNIVERSE
        ===================================================================== -->
     <div id="universe-overlay">
         <button class="back-to-site-btn" onclick="exitUniverseOverlay()">← Go Back</button>
@@ -548,10 +548,10 @@
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
         let loveTreeAnimId = null;
-        const petals = [];
+        const heartParticles = [];
         const lilies = [];
-        const branchQueue = [];
-        let isTreeEngineRunning = false;
+        let isUniverseRunning = false;
+        let pulseHeartTime = 0;
 
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
@@ -663,6 +663,7 @@
             document.getElementById('lightboxOverlay').style.display = 'flex';
         }
 
+        // LIGHTBOX CLOSE
         function closeLightbox() {
             document.getElementById('lightboxOverlay').style.display = 'none';
         }
@@ -752,22 +753,20 @@
         }
 
         // =====================================================================
-        // ADVANCED CANDLE AND BLOOM TIMING ENGINE
+        // ADVANCED CANDLE AND PARTICLES TIMING ENGINE
         // =====================================================================
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
             
-            // Bring back the dark room and burning candle state
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '1';
             gate.style.pointerEvents = 'auto';
             document.getElementById('candle-flame').style.display = 'block';
             document.getElementById('universe-text').style.display = 'none';
             
-            isTreeEngineRunning = false;
+            isUniverseRunning = false;
             if (loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
             
-            // Clean out old drawings
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
@@ -776,54 +775,64 @@
         }
 
         function extinguishCandle(event) {
-            // Blow out flame visual immediately
             document.getElementById('candle-flame').style.display = 'none';
             spawnConfetti(event.clientX, event.clientY);
 
-            // Animate curtains opening up
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '0';
             gate.style.pointerEvents = 'none';
 
-            // Reveal the happy birthday footer text
             document.getElementById('universe-text').style.display = 'block';
 
-            // Start running tree recursive structures
             setTimeout(() => {
-                initUniverseTree();
+                initUniverseHeart();
             }, 600);
         }
 
         function exitUniverseOverlay() {
             document.getElementById('universe-overlay').classList.remove('active');
-            isTreeEngineRunning = false;
+            isUniverseRunning = false;
             if (loveTreeAnimId) {
                 cancelAnimationFrame(loveTreeAnimId);
                 loveTreeAnimId = null;
             }
         }
 
-        function initUniverseTree() {
+        function initUniverseHeart() {
             const canvas = document.getElementById('loveTreeCanvas');
-            const ctx = canvas.getContext('2d');
-            
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             
-            petals.length = 0;
+            heartParticles.length = 0;
             lilies.length = 0;
-            branchQueue.length = 0;
+            pulseHeartTime = 0;
 
-            const rootX = canvas.width / 2;
-            const rootY = canvas.height - 50;
-            
-            branchQueue.push({
-                x1: rootX, y1: rootY,
-                x2: rootX, y2: rootY - 110,
-                thickness: 12, length: 110, angle: -Math.PI / 2, depth: 0
-            });
+            // Generate particles targeted at parametric heart mathematical plot points
+            const totalParticles = 280;
+            for (let i = 0; i < totalParticles; i++) {
+                // Angle stepping along the mathematical heart curve
+                const angleStep = (i / totalParticles) * Math.PI * 2;
+                
+                // Classic parametric heart equations
+                const targetX = 16 * Math.pow(Math.sin(angleStep), 3);
+                const targetY = -(13 * Math.cos(angleStep) - 5 * Math.cos(2 * angleStep) - 2 * Math.cos(3 * angleStep) - Math.cos(4 * angleStep));
 
-            // Pre-seed coordinates across the ground level for white water lilies
+                heartParticles.push({
+                    // Start exploded out randomly all over the viewports
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    // Targeted offsets from central core position anchor points
+                    hx: targetX,
+                    hy: targetY,
+                    size: 4 + Math.random() * 5,
+                    speed: 0.03 + Math.random() * 0.04,
+                    color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
+                    alpha: 0.4 + Math.random() * 0.6,
+                    seed: Math.random() * 100
+                });
+            }
+
+            // Seed lily coordinates on the baseline ground floor boundary line
             const lilyCount = 14;
             for(let i = 0; i < lilyCount; i++) {
                 lilies.push({
@@ -834,84 +843,49 @@
                 });
             }
 
-            isTreeEngineRunning = true;
-            runUniverseEngineLoop(ctx, canvas);
+            isUniverseRunning = true;
+            runUniverseEngineLoop();
         }
 
-        function runUniverseEngineLoop(ctx, canvas) {
-            if (!isTreeEngineRunning) return;
+        function runUniverseEngineLoop() {
+            if (!isUniverseRunning) return;
+
+            const canvas = document.getElementById('loveTreeCanvas');
+            const ctx = canvas.getContext('2d');
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Process tree growing branches step
-            let stepsThisFrame = 0;
-            while (branchQueue.length > 0 && stepsThisFrame < 2) {
-                const branch = branchQueue.shift();
-                drawBranchLine(ctx, branch);
-                stepsThisFrame++;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 20;
 
-                if (branch.depth < 10) {
-                    const leftAngle = branch.angle - (0.16 + Math.random() * 0.22);
-                    const leftLength = branch.length * (0.76 + Math.random() * 0.12);
-                    branchQueue.push({
-                        x1: branch.x2, y1: branch.y2,
-                        x2: branch.x2 + Math.cos(leftAngle) * leftLength,
-                        y2: branch.y2 + Math.sin(leftAngle) * leftLength,
-                        thickness: branch.thickness * 0.72, length: leftLength, angle: leftAngle, depth: branch.depth + 1
-                    });
+            // Compute dynamic pulsing zoom sizing factor
+            pulseHeartTime += 0.04;
+            const pulseFactor = 10 + Math.sin(pulseHeartTime) * 1.2;
 
-                    const rightAngle = branch.angle + (0.16 + Math.random() * 0.22);
-                    const rightLength = branch.length * (0.76 + Math.random() * 0.12);
-                    branchQueue.push({
-                        x1: branch.x2, y1: branch.y2,
-                        x2: branch.x2 + Math.cos(rightAngle) * rightLength,
-                        y2: branch.y2 + Math.sin(rightAngle) * rightLength,
-                        thickness: branch.thickness * 0.72, length: rightLength, angle: rightAngle, depth: branch.depth + 1
-                    });
-                } else {
-                    // Spawn Heart-shaped Petals on branches
-                    for (let i = 0; i < 5; i++) {
-                        petals.push({
-                            x: branch.x2 + (Math.random() * 30 - 15),
-                            y: branch.y2 + (Math.random() * 30 - 15),
-                            size: 4 + Math.random() * 4,
-                            alpha: 0.1, targetAlpha: 0.6 + Math.random() * 0.4,
-                            color: Math.random() > 0.45 ? '#ff4d6d' : '#ffb3c1',
-                            driftOffset: Math.random() * 100
-                        });
-                    }
-                }
-            }
+            // 1. Draw + Assemble Particle Core Form Configurations
+            heartParticles.forEach(p => {
+                // Dynamic targeted final spot destination factoring the pulse scale calculation
+                const finalDestX = centerX + p.hx * pulseFactor;
+                const finalDestY = centerY + p.hy * pulseFactor;
 
-            // 2. Draw Lilies on the Ground
+                // Move toward destination coordinates linearly over frames smoothly
+                p.x += (finalDestX - p.x) * p.speed;
+                p.y += (finalDestY - p.y) * p.speed;
+
+                // Inject miniature micro drift vibrations for natural visual organic feeling
+                const subtleDriftX = Math.sin(p.seed + pulseHeartTime) * 0.3;
+                const subtleDriftY = Math.cos(p.seed + pulseHeartTime) * 0.3;
+
+                drawHeartShapePetal(ctx, p.x + subtleDriftX, p.y + subtleDriftY, p.size, p.color, p.alpha);
+            });
+
+            // 2. Draw Lilies fading onto the Ground
             lilies.forEach(l => {
-                if(l.alpha < 1) l.alpha += 0.008; 
+                if(l.alpha < 1) l.alpha += 0.01; 
                 drawLilyFlower(ctx, l.x, l.y, l.scale, l.alpha);
             });
 
-            // 3. Draw + Update Falling Heart Petal Physics
-            petals.forEach(p => {
-                if (p.alpha < p.targetAlpha) p.alpha += 0.02;
-                p.y += 0.4; 
-                p.x += Math.sin(p.driftOffset + p.y * 0.03) * 0.2;
-                if (p.y > canvas.height - 30) p.y = 0; 
-
-                drawHeartShapePetal(ctx, p.x, p.y, p.size, p.color, p.alpha);
-            });
-
-            loveTreeAnimId = requestAnimationFrame(() => runUniverseEngineLoop(ctx, canvas));
-        }
-
-        function drawBranchLine(ctx, b) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(b.x1, b.y1);
-            ctx.lineTo(b.x2, b.y2);
-            ctx.lineWidth = b.thickness;
-            ctx.strokeStyle = '#4a323a';
-            ctx.lineCap = 'round';
-            ctx.stroke();
-            ctx.restore();
+            loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
         }
 
         function drawHeartShapePetal(ctx, x, y, size, color, alpha) {
@@ -926,21 +900,21 @@
             ctx.restore();
         }
 
-        // WATER LILY VECTOR GRAPHICS
+        // LILY FLOWER DRAW ENGINE
         function drawLilyFlower(ctx, cx, cy, scale, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha;
             ctx.translate(cx, cy);
             ctx.scale(scale, scale);
 
-            // Draw green lily pad leaves base
+            // Lily Pad Leaf Base
             ctx.fillStyle = "#52b788";
             ctx.beginPath();
             ctx.arc(0, 4, 16, 0, Math.PI * 1.8);
             ctx.lineTo(0, 4);
             ctx.fill();
 
-            // Draw white layered lily petals
+            // Layered White Flower Petals
             ctx.fillStyle = "#ffffff";
             const petalCount = 8;
             for (let i = 0; i < petalCount; i++) {
@@ -952,7 +926,7 @@
                 ctx.fill();
             }
 
-            // Draw golden yellow stamen center crown
+            // Stamen Center Crown
             ctx.fillStyle = "#fee440";
             ctx.beginPath();
             ctx.arc(0, 0, 4, 0, Math.PI * 2);
