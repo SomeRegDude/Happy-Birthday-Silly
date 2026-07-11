@@ -128,7 +128,7 @@
             100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.2) rotate(360deg); opacity: 0; }
         }
 
-        /* Layout UI Headers and Navigation Navigation Panels */
+        /* Layout UI Headers and Navigation */
         header {
             background-color: var(--cream);
             padding: 25px 15px;
@@ -668,10 +668,10 @@
         const scatteredLilies = [];
         
         // --- PERFORMANCE CONFIGURATION ---
-        const maxDriftingPetals = 45; // Cut down from 150 to keep canvas performance high
-        const leavesPerTip = 3;       // Reduced density to prevent rendering choke loops
+        const maxDriftingPetals = 45; 
+        const leavesPerTip = 3;       
         let treeGrowthStartTime = 0;
-        const totalTreeGrowthDuration = 3500; // Complete organic tree build time (3.5 seconds)
+        const totalTreeGrowthDuration = 3500; // 3.5 seconds complete structural growth cycle
 
         // Image loading instantiation for your specific custom image file
         const lilyImage = new Image();
@@ -878,7 +878,7 @@
         }
 
         // =====================================================================
-        // UNIVERSE GENERATION: CONTROLLED GROWTH TIMING & CACHED RENDER POOL
+        // UNIVERSE GENERATION: CONTROLLED GROWTH TIMING ENGINE
         // =====================================================================
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
@@ -930,13 +930,13 @@
             heartPetals.length = 0;
             scatteredLilies.length = 0;
 
-            // Generate full structural array framework layout definitions
+            // Generate full structural configuration map
             createForkStructure(canvas.width / 2, canvas.height - 20, 14, 115, -Math.PI / 2, 0);
 
-            // Record dynamic timestamp offset markers
+            // Establish zero-frame point timestamp
             treeGrowthStartTime = performance.now();
 
-            // Seed optimized environmental falling/drifting petal animations
+            // Seed drifting petals smoothly
             for (let i = 0; i < maxDriftingPetals; i++) {
                 heartPetals.push({
                     x: Math.random() * canvas.width,
@@ -951,7 +951,7 @@
                 });
             }
 
-            // Generate 12 random base positions on the floor for Lilies.png
+            // Scatter ground lilies positions safely
             for (let i = 0; i < 12; i++) {
                 scatteredLilies.push({
                     x: Math.random() * (canvas.width - 60) + 10,
@@ -965,14 +965,14 @@
             runUniverseEngineLoop();
         }
 
-        // Mathematical branch structural tree array setup
+        // Build structural hierarchy array mappings
         function createForkStructure(x, y, thick, len, angle, depth) {
             if (depth > 10) return; 
 
             const x2 = x + Math.cos(angle) * len;
             const y2 = y + Math.sin(angle) * len;
 
-            // Sort depth execution timing allocations across our 3.5s window
+            // Map generation stages tightly across a 3.5-second runtime
             const appearanceDelay = (depth / 10) * (totalTreeGrowthDuration * 0.7);
 
             branchQueue.push({
@@ -993,7 +993,7 @@
                     createForkStructure(x2, y2, thick * 0.55, len * 0.55, angle + (Math.random() * 0.4 - 0.2), depth + 1);
                 }
             } else {
-                // Outer terminal nodes only: Sprouts lightweight blooming heart leaves
+                // Outermost tips grow leaves only after branch structures assemble
                 const baseSproutDelay = totalTreeGrowthDuration * 0.75;
                 for (let k = 0; k < leavesPerTip; k++) {
                     heartPetals.push({
@@ -1020,19 +1020,18 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Floor background backdrop layer
+            // Floor background gradient layer
             const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 80);
             groundGrad.addColorStop(0, '#fbc4b6');
             groundGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = groundGrad;
             ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
 
-            // DYNAMIC SEQUENTIAL TREE INTERPOLATION GROWER
+            // Process tree growth queue using interpolation variables
             branchQueue.forEach(b => {
-                if (elapsedTreeTime < b.startTime) return; // Not ready to grow yet
+                if (elapsedTreeTime < b.startTime) return; 
 
-                // Determine local line growth progression interpolation factors
-                const durationPerBranch = 400; // Linear interpolation crawl ms speed
+                const durationPerBranch = 400; 
                 let factor = (elapsedTreeTime - b.startTime) / durationPerBranch;
                 if (factor > 1) factor = 1;
 
@@ -1048,10 +1047,10 @@
                 ctx.stroke();
             });
 
-            // RENDER OPTIMIZED LEAF ARRAYS
+            // Process petal/leaf groupings smoothly
             heartPetals.forEach(p => {
                 if (p.state === 'bloom') {
-                    if (elapsedTreeTime < p.sproutDelay) return; // Wait for branch growth arrival
+                    if (elapsedTreeTime < p.sproutDelay) return; 
                     
                     if (p.scale < p.targetScale) p.scale += 0.015; 
                     if (p.opacity < p.targetOpacity) p.opacity += 0.02;
@@ -1069,7 +1068,7 @@
                 }
             });
 
-            // RENDER LILIES GENTLY SCATTERED ACROSS FLOOR BASE
+            // Handle lilies asset alpha fade loops
             if (lilyImageLoaded && elapsedTreeTime > 1500) {
                 scatteredLilies.forEach(lily => {
                     if (lily.opacity < 1) lily.opacity += 0.015;
@@ -1083,7 +1082,7 @@
             loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
         }
 
-        // VECTOR HEART RENDERING
+        // Vector shape processor function
         function drawHeartShapePetal(ctx, x, y, size, color, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha;
@@ -1096,7 +1095,7 @@
             ctx.restore();
         }
 
-        // Window resize framework handlers
+        // Clean resizing logic
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('loveTreeCanvas');
             if(canvas && document.getElementById('universe-overlay').classList.contains('active')) {
