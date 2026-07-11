@@ -249,7 +249,7 @@
         }
 
         /* =====================================================================
-           THE FULLSCREEN UNIVERSE OVERLAY
+           5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
            ===================================================================== */
         #universe-overlay {
             position: fixed;
@@ -519,14 +519,14 @@
     </div>
 
     <!-- =====================================================================
-       5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE & HEART LEAVES UNIVERSE
+       5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
        ===================================================================== -->
     <div id="universe-overlay">
         <button class="back-to-site-btn" onclick="exitUniverseOverlay()">← Go Back</button>
         
         <!-- THE DARK CANDLE INTERACTION GATE LAYER -->
         <div id="candle-gate">
-            <h3 style="color: #ffe5ec; font-size: 1.4rem; margin-bottom: 40px; text-shadow: 0 2px 10px rgba(255, 77, 109, 0.5); padding: 0 20px;">
+            <h3 style="color: #ffe5ec; font-size: 1.4rem; margin-bottom: 40px; text-shadow: 0 2px 10px rgba(255, 77, 109, 0.5);">
                 Make a wish and click the candle to blow it out... 🕯️
             </h3>
             <div class="candle-container" onclick="extinguishCandle(event)">
@@ -548,15 +548,10 @@
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
         let loveTreeAnimId = null;
-        const branchQueues = [];
-        const heartLeaves = [];
-        const floorLilies = [];
-        let isUniverseRunning = false;
-        let pulseTime = 0;
-
-        // Custom PNG Image Object Setup
-        const lilyImg = new Image();
-        lilyImg.src = 'lilies.png';
+        const branchQueue = [];
+        const heartPetals = [];
+        const petalsTotal = 150;
+        let bloomTriggered = false;
 
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
@@ -668,7 +663,6 @@
             document.getElementById('lightboxOverlay').style.display = 'flex';
         }
 
-        // LIGHTBOX CLOSE
         function closeLightbox() {
             document.getElementById('lightboxOverlay').style.display = 'none';
         }
@@ -763,14 +757,15 @@
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
             
+            // Show dark gate and burning candle
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '1';
             gate.style.pointerEvents = 'auto';
             document.getElementById('candle-flame').style.display = 'block';
             document.getElementById('universe-text').style.display = 'none';
             
-            isUniverseRunning = false;
             if (loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
+            bloomTriggered = false;
             
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
@@ -783,12 +778,15 @@
             document.getElementById('candle-flame').style.display = 'none';
             spawnConfetti(event.clientX, event.clientY);
 
+            // Open curtains animation
             const gate = document.getElementById('candle-gate');
             gate.style.opacity = '0';
             gate.style.pointerEvents = 'none';
 
+            // Reveal birthday text
             document.getElementById('universe-text').style.display = 'block';
 
+            // Start Tree & Heart Generation
             setTimeout(() => {
                 initUniverseTree();
             }, 600);
@@ -796,7 +794,6 @@
 
         function exitUniverseOverlay() {
             document.getElementById('universe-overlay').classList.remove('active');
-            isUniverseRunning = false;
             if (loveTreeAnimId) {
                 cancelAnimationFrame(loveTreeAnimId);
                 loveTreeAnimId = null;
@@ -808,167 +805,222 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             
-            branchQueues.length = 0;
-            heartLeaves.length = 0;
-            floorLilies.length = 0;
-            pulseTime = 0;
+            branchQueue.length = 0;
+            heartPetals.length = 0;
+            bloomTriggered = false;
 
-            // 1. Queue up the initial trunk segment base right at the center bottom floor line
-            branchQueues.push({
-                startX: canvas.width / 2,
-                startY: canvas.height - 10,
-                angle: -Math.PI / 2,
-                length: 22,
-                branchWidth: 14,
-                generation: 0,
-                progress: 0,
-                speed: 0.8
-            });
+            // Define recursive branch structure parameters
+            // args: rootX, rootY, branchThick, branchLen, angle
+            createForkStructure(canvas.width / 2, canvas.height, 12, 100, -Math.PI / 2, 0);
 
-            // 2. Queue up scattered PNG lilies across the bottom alignment frame boundaries
-            const lilyCount = 12;
-            for(let i = 0; i < lilyCount; i++) {
-                floorLilies.push({
-                    x: 50 + Math.random() * (canvas.width - 100),
-                    y: canvas.height - 45 + (Math.random() * 20),
-                    width: 45 + Math.random() * 25,
-                    height: 45 + Math.random() * 25,
-                    alpha: 0
+            // Pre-seed background petal objects
+            for (let i = 0; i < petalsTotal; i++) {
+                heartPetals.push({
+                    x: Math.random() * canvas.width,
+                    y: (Math.random() * canvas.height * 0.7) - canvas.height, // Starts off-screen
+                    targetY: Math.random() * canvas.height * 0.85,
+                    size: 3 + Math.random() * 5,
+                    opacity: 0.1,
+                    targetOpacity: 0.3 + Math.random() * 0.5,
+                    color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
+                    driftSpeed: 0.5 + Math.random() * 1.5,
+                    waveOffset: Math.random() * 100,
+                    state: 'waiting' // waiting, bloom, drift
                 });
             }
 
-            isUniverseRunning = true;
             runUniverseEngineLoop();
         }
 
-        function runUniverseEngineLoop() {
-            if (!isUniverseRunning) return;
+        // Generate entire tree geometry into structure queue
+        function createForkStructure(x, y, thick, len, angle, depth) {
+            if (depth > 11) return; // Recursion base case ceiling
 
+            // Coordinates for structural endpoint
+            const x2 = x + Math.cos(angle) * len;
+            const y2 = y + Math.sin(angle) * len;
+
+            branchQueue.push({
+                x1: x, y1: y,
+                x2: x2, y2: y2,
+                thickness: thick,
+                length: len,
+                angle: angle,
+                depth: depth,
+                processed: false,
+                drawProgress: 0 // Used for growing animation mechanics
+            });
+
+            // If max depth ceiling not hit, fork off structural paths iteratively
+            if (depth < 11) {
+                // Fork 1 (Left leaning shift)
+                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle - (0.15 + Math.random() * 0.25), depth + 1);
+                // Fork 2 (Right leaning shift)
+                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle + (0.15 + Math.random() * 0.25), depth + 1);
+                
+                // Occasional procedural middle structural branch support
+                if(Math.random() > 0.7) {
+                    createForkStructure(x2, y2, thick * 0.6, len * 0.6, angle + (Math.random() * 0.4 - 0.2), depth + 1);
+                }
+            } else {
+                // Terminal point reached: Spawn Petals on terminal twigs
+                for (let k = 0; k < 6; k++) {
+                    heartPetals.push({
+                        cx: x2 + (Math.random() * 30 - 15),
+                        cy: y2 + (Math.random() * 30 - 15),
+                        size: 4 + Math.random() * 5,
+                        opacity: 0.1,
+                        targetOpacity: 0.7 + Math.random() * 0.3,
+                        color: Math.random() > 0.45 ? '#ff4d6d' : '#ffb3c1',
+                        scale: 0.1,
+                        targetScale: 1,
+                        state: 'waiting_bloom' // wait for terminal twig to grow
+                    });
+                }
+            }
+        }
+
+        function runUniverseEngineLoop() {
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
 
-            pulseTime += 0.04;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Process expanding recursive growth segments dynamically
-            for (let i = branchQueues.length - 1; i >= 0; i--) {
-                const b = branchQueues[i];
-                b.progress += b.speed;
-                
-                // Calculate incremental drawing vector points
-                const currentLen = Math.min(b.progress, b.length);
-                const endX = b.startX + Math.cos(b.angle) * currentLen;
-                const endY = b.startY + Math.sin(b.angle) * currentLen;
+            // Handle Ground Imagery
+            const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 50);
+            groundGrad.addColorStop(0, '#52b788');
+            groundGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = groundGrad;
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
 
-                ctx.strokeStyle = '#3a221d';
-                ctx.lineWidth = b.branchWidth;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(b.startX, b.startY);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
+            // Pre-seed coordinates across ground floor alignment frame for procedural lilies
+            const lilyX = [60, 140, 250, 400, canvas.width - 200, canvas.width - 90];
+            lilyX.forEach(xPos => drawLilyFlower(ctx, xPos, canvas.height - 35, 1));
 
-                // Branch segment reaches full execution growth length limits
-                if (b.progress >= b.length) {
-                    branchQueues.splice(i, 1);
-
-                    // If max branching complexity ceiling not reached, produce new forks
-                    if (b.generation < 9) {
-                        // Fork 1 (Left leaning shift coordinates)
-                        branchQueues.push({
-                            startX: endX,
-                            startY: endY,
-                            angle: b.angle - 0.22 - Math.random() * 0.25,
-                            length: b.length * (0.78 + Math.random() * 0.1),
-                            branchWidth: b.branchWidth * 0.72,
-                            generation: b.generation + 1,
-                            progress: 0,
-                            speed: b.speed * 0.95
-                        });
-                        // Fork 2 (Right leaning shift coordinates)
-                        branchQueues.push({
-                            startX: endX,
-                            startY: endY,
-                            angle: b.angle + 0.22 + Math.random() * 0.25,
-                            length: b.length * (0.78 + Math.random() * 0.1),
-                            branchWidth: b.branchWidth * 0.72,
-                            generation: b.generation + 1,
-                            progress: 0,
-                            speed: b.speed * 0.95
-                        });
-
-                        // Occasional middle cluster support extensions
-                        if(Math.random() > 0.65) {
-                            branchQueues.push({
-                                startX: endX,
-                                startY: endY,
-                                angle: b.angle + (Math.random() * 0.4 - 0.2),
-                                length: b.length * 0.6,
-                                branchWidth: b.branchWidth * 0.65,
-                                generation: b.generation + 1,
-                                progress: 0,
-                                speed: b.speed
-                            });
-                        }
+            // Execute recursive branching growth pipeline step
+            let stepExecuted = false;
+            let stepsThisFrame = 0;
+            for (let i = 0; i < branchQueue.length; i++) {
+                const b = branchQueue[i];
+                if (!b.processed) {
+                    // Update structural rendering animation progres step matrices
+                    if (b.drawProgress < b.length) {
+                        b.drawProgress += 1; // Growing speed constant
+                        stepExecuted = true;
                     } else {
-                        // Terminal point reached: sprout heart foliage structural models here
-                        const leafCount = 3 + Math.floor(Math.random() * 4);
-                        for(let k = 0; k < leafCount; k++) {
-                            heartLeaves.push({
-                                cx: endX + (Math.random() * 30 - 15),
-                                cy: endY + (Math.random() * 30 - 15),
-                                baseSize: 5 + Math.random() * 7,
-                                color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
-                                scalePhase: Math.random() * Math.PI,
-                                currentScale: 0 // Starts hidden, scales in
-                            });
-                        }
+                        b.drawProgress = b.length;
+                        b.processed = true;
                     }
+
+                    // Process and draw the line based on structural progress vectors
+                    ctx.strokeStyle = '#3a221d'; // Bark tone color map
+                    ctx.lineWidth = b.thickness;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(b.x1, b.y1);
+                    // Vectors update based on current partial length growth calculations
+                    ctx.lineTo(b.x1 + Math.cos(b.angle) * b.drawProgress, b.y1 + Math.sin(b.angle) * b.drawProgress);
+                    ctx.stroke();
+                    stepsThisFrame++;
+                    if(stepsThisFrame > 15) break; // performance limit steps per frame
                 }
             }
 
-            // Redraw background canopy dynamically over standard system layouts
-            heartLeaves.forEach(l => {
-                // Grow leaf into view initially
-                if (l.currentScale < 1) l.currentScale += 0.02;
-
-                // Combine baseline initialization size matrices with global pulse frequencies
-                const breathingFactor = 1 + Math.sin(pulseTime + l.scalePhase) * 0.15;
-                const activeDrawSize = l.baseSize * l.currentScale * breathingFactor;
-
-                drawHeartShapePetal(ctx, l.cx, l.cy, activeDrawSize, l.color, 0.85);
+            // Standard fallback rendering engine for already-grown complex branch networks
+            branchQueue.forEach(b => {
+                if(b.processed) {
+                    ctx.strokeStyle = '#3a221d'; ctx.lineWidth = b.thickness; ctx.lineCap = 'round';
+                    ctx.beginPath(); ctx.moveTo(b.x1, b.y1); ctx.lineTo(b.x2, b.y2); ctx.stroke();
+                }
             });
 
-            // Handle Custom PNG Ground Lilies Fading mechanics cleanly
-            floorLilies.forEach(lily => {
-                if (lily.alpha < 1) lily.alpha += 0.01;
-                
-                ctx.save();
-                ctx.globalAlpha = lily.alpha;
-                // Render the pre-loaded image resource directly to coordinate matrices
-                ctx.drawImage(lilyImg, lily.x, lily.y, lily.width, lily.height);
-                ctx.restore();
+            // Once trunk network stops growing, trigger heart leaf foliage bloom physics
+            if (!stepExecuted && !bloomTriggered && branchQueue.length > 0) {
+                if (branchQueue.every(b => b.processed)) {
+                    bloomTriggered = true;
+                    console.log("Tree structure finalized. Foliage bloom engines engaged.");
+                    heartPetals.forEach(p => {
+                        if(p.state === 'waiting_bloom') p.state = 'bloom';
+                    });
+                }
+            }
+
+            // Draw Heart Shape Petals dynamic updates
+            heartPetals.forEach(p => {
+                if(p.state === 'waiting' || p.state === 'waiting_bloom') return;
+
+                if (p.state === 'bloom') {
+                    // Bloom/Growth scale update phase matrix calculations
+                    if (p.scale < p.targetScale) p.scale += 0.05;
+                    if (p.opacity < p.targetOpacity) p.opacity += 0.05;
+
+                    drawHeartShapePetal(ctx, p.cx, p.cy, p.size * p.scale, p.color, p.opacity);
+                }
             });
 
             loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
         }
 
+        // CUSTOM VECTOR MATHEMATICAL WATER LILY GRAPHICS
+        function drawLilyFlower(ctx, cx, cy, scale) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale, scale);
+
+            // Draw green lily pad leaves base alignment frames
+            ctx.fillStyle = "#52b788";
+            ctx.beginPath();
+            ctx.arc(0, 4, 16, 0, Math.PI * 1.8);
+            ctx.lineTo(0, 4);
+            ctx.fill();
+
+            // Draw white layered lily petals using bezier coordinates
+            ctx.fillStyle = "#ffffff";
+            const petalCount = 8;
+            for (let i = 0; i < petalCount; i++) {
+                ctx.rotate((Math.PI * 2) / petalCount);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                // args: cp1x, cp1y, cp2x, cp2y, x, y
+                ctx.quadraticCurveTo(-5, -12, 0, -16);
+                ctx.quadraticCurveTo(5, -12, 0, 0);
+                ctx.fill();
+            }
+
+            // Draw golden yellow stamen center crown vector
+            ctx.fillStyle = "#fee440";
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // CUSTOM VECTOR MATHEMATICAL HEART GRAPHICS
         function drawHeartShapePetal(ctx, x, y, size, color, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha;
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.moveTo(x, y);
+            // Draw smooth mathematical curve maps using recursive vector pathing arrays
+            // args: cp1x, cp1y, cp2x, cp2y, x, y
             ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
             ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
             ctx.fill();
             ctx.restore();
         }
 
+        // Reset geometry matrices safely on viewport resize events
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('loveTreeCanvas');
             if(canvas && document.getElementById('universe-overlay').classList.contains('active')) {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
+                // Since recursive growth geometry relies tightly on viewport dimensions matrix,
+                // we safely reset geometry to prevent off-screen mathematical drift errors.
+                exitUniverseOverlay();
+                launchUniverseOverlay();
             }
         });
     </script>
