@@ -683,7 +683,7 @@
 
             let positions = [];
             for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; r++) { // Fixed logic loop assignment safety
+                for (let c = 0; c < cols; c++) { // Fixed r++ typo back to c++ to eliminate tab hanging
                     positions.push({ correctX: c * pieceSize, correctY: r * pieceSize, r: r, c: c });
                 }
             }
@@ -774,7 +774,7 @@
         }
 
         /* =====================================================================
-           GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE (RESTORED & ADJUSTED)
+           GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE
            ==================================================================== */
         function launchUniverseOverlay() {
             const secretPasswordInput = prompt("Enter the password to access the Super Secret zone: 🤫");
