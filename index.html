@@ -1,4 +1,668 @@
-let loveTreeAnimId = null;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Special Place</title>
+    <style>
+        :root {
+            --primary-pink: #ff8fab;
+            --dark-pink: #fb6f92;
+            --light-pink: #ffe5ec;
+            --cream: #fffafb;
+            --text-color: #4a373a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-pink);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Background floating elements container */
+        #heartsContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-pink);
+            opacity: 0.15;
+            transform: rotate(-45deg);
+            animation: floatUp 12s linear infinite;
+            bottom: -50px;
+        }
+
+        .bg-heart::before, .bg-heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-pink);
+        }
+        .bg-heart::before { top: -10px; left: 0; }
+        .bg-heart::after { top: 0; left: 10px; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(-45deg) scale(0.8); opacity: 0; }
+            10% { opacity: 0.25; }
+            90% { opacity: 0.25; }
+            100% { transform: translateY(-110vh) rotate(45deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Cover Gift Box Intro Overlay */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffe5ec;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .gift-box-wrapper {
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .gift-box-wrapper:hover {
+            transform: scale(1.08);
+        }
+
+        .gift-box-emoji {
+            font-size: 110px;
+            filter: drop-shadow(0 6px 12px rgba(251, 111, 146, 0.3));
+            animation: bounceGift 2.5s infinite;
+        }
+
+        @keyframes bounceGift {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .click-prompt {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--dark-pink);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Explosion Confetti Styles */
+        .confetti-emoji {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            font-size: 24px;
+            animation: flyOut 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes flyOut {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* Layout UI Headers and Navigation Navigation Panels */
+        header {
+            background-color: var(--cream);
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(251, 111, 146, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        header h1 {
+            color: var(--dark-pink);
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #7a6266;
+            font-size: 1rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px;
+            background-color: rgba(255, 250, 251, 0.6);
+            backdrop-filter: blur(5px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(251, 111, 146, 0.15);
+        }
+
+        .tab-btn {
+            background-color: white;
+            border: 2px solid var(--primary-pink);
+            color: var(--dark-pink);
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--dark-pink);
+            color: white;
+            border-color: var(--dark-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(253, 111, 146, 0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            background-color: var(--cream);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(74, 55, 58, 0.05);
+            border: 1px solid rgba(251, 111, 146, 0.1);
+        }
+
+        .hidden { display: none !important; }
+
+        /* Home Dashboard Layout Style Elements */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        .welcome-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .welcome-card h2 {
+            color: var(--dark-pink);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .welcome-card p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #5c474b;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #fff5f6 0%, #ffe5ec 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px dashed var(--primary-pink);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .universe-btn {
+            background: linear-gradient(45deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 15px;
+        }
+        .universe-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.6);
+        }
+
+        /* Letters Section CSS */
+        .letter-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .letter-item {
+            background: white;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-pink);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .letter-header {
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .letter-header:hover { background-color: #fff5f6; }
+
+        .letter-body {
+            padding: 20px;
+            border-top: 1px solid #ffe5ec;
+            background-color: #fffafb;
+            line-height: 1.6;
+            color: #554144;
+            display: none;
+        }
+
+        /* Lock Box Password Area */
+        .password-box {
+            padding: 20px;
+            background-color: #fff5f6;
+            border-top: 1px solid #ffe5ec;
+            display: none;
+            text-align: center;
+        }
+        .password-box input {
+            padding: 10px 15px;
+            border: 2px solid var(--primary-pink);
+            border-radius: 8px;
+            outline: none;
+            font-size: 1rem;
+            width: 200px;
+            text-align: center;
+        }
+        .password-box button {
+            padding: 10px 20px;
+            background-color: var(--dark-pink);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .error-txt {
+            color: #d90429;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Photos Section Layout */
+        .photo-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .photo-card {
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 1px solid rgba(251, 111, 146, 0.1);
+        }
+        .photo-card:hover { transform: scale(1.04) rotate(1deg); }
+
+        .photo-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .photo-desc {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            color: #6b5256;
+            font-weight: 500;
+        }
+
+        /* Lightbox CSS */
+        #lightboxOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        #lightboxImg {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 25px; right: 35px;
+            color: white; font-size: 40px; cursor: pointer;
+            user-select: none;
+        }
+
+        /* Jigsaw Puzzle Styles */
+        .puzzle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #puzzle-board {
+            width: 500px;
+            height: 500px;
+            background-color: #eee;
+            position: relative;
+            border: 4px solid var(--dark-pink);
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        @media (max-width: 550px) {
+            #puzzle-board { width: 300px; height: 300px; }
+            .puzzle-piece { width: 60px !important; height: 60px !important; background-size: 300px 300px !important; }
+        }
+        .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            background-image: url('PuzzleImage.png');
+            background-size: 500px 500px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: move;
+            z-index: 5;
+            touch-action: none;
+        }
+        #win-message {
+            margin-top: 20px;
+            color: #2b9348;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+            animation: pulseText 1.5s infinite;
+        }
+
+        /* Universe Interactive Modal Overlays */
+        #universe-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #fff0f3 0%, #ffe5ec 100%);
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+        }
+        #universe-overlay.active { display: flex; }
+
+        .universe-nav-bar {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            z-index: 5100;
+        }
+        .exit-univ-btn {
+            background-color: rgba(251, 111, 146, 0.15);
+            border: none;
+            color: var(--dark-pink);
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .exit-univ-btn:hover { background-color: var(--primary-pink); color: white; }
+
+        #loveTreeCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 5005;
+        }
+
+        /* Interactive Candle Protection Screen */
+        #candle-gate {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffe5ec;
+            z-index: 5050;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease;
+        }
+        .candle-container {
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+        }
+        .candle-stick {
+            width: 30px; height: 120px;
+            background: linear-gradient(to right, #ffb3c1, #ff8fab);
+            border-radius: 6px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .candle-wick {
+            width: 4px; height: 15px;
+            background-color: #4a373a;
+            position: absolute;
+            top: -15px; left: 13px;
+        }
+        .candle-flame {
+            width: 24px; height: 40px;
+            background: radial-gradient(ellipse at bottom, #ffea00 0%, #ff9100 50%, #ff3c00 100%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -52px; left: 3px;
+            box-shadow: 0 0 20px #ff9100;
+            animation: flickerFlame 0.15s infinite alternate;
+        }
+        @keyframes flickerFlame {
+            0% { transform: scale(1) rotate(-1deg); }
+            100% { transform: scale(1.08) rotate(1.5deg); opacity: 0.95; }
+        }
+        .candle-instructions {
+            margin-top: 40px;
+            color: var(--dark-pink);
+            font-weight: 600;
+            font-size: 1.15rem;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        /* Top Center Text Layout */
+        #universe-text {
+            position: absolute;
+            top: 80px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 5010;
+            text-align: center;
+            width: 85%;
+            pointer-events: none;
+        }
+        #universe-text h2 { color: var(--dark-pink); font-size: 1.8rem; margin-bottom: 8px; }
+        #universe-text p { color: #6b5256; font-size: 1rem; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Layer -->
+    <div id="heartsContainer"></div>
+
+    <!-- Intro Box Overlay Layer -->
+    <div id="intro-overlay">
+        <div class="gift-box-wrapper" onclick="openGiftBox(event)">
+            <div class="gift-box-emoji">🎁</div>
+            <div class="click-prompt">Click to Open Your Gift</div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar Header Panel -->
+    <header>
+        <h1>Our Shared Space</h1>
+        <p>A little sandbox of memories built just for you.</p>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="showSection('home')">🏠 Home</button>
+        <button class="tab-btn" onclick="showSection('letters')">💌 Letters</button>
+        <button class="tab-btn" onclick="showSection('photos')">📸 Photos</button>
+        <button class="tab-btn" onclick="showSection('puzzle')">🧩 Puzzle</button>
+        <button id="secret-tab-btn" class="tab-btn hidden" style="border-color: #9d4edd; color: #9d4edd;">✨ Secrets</button>
+    </nav>
+
+    <!-- Content Sections Area -->
+    <div class="container">
+        
+        <!-- Home Dashboard Panel -->
+        <div id="home-section" class="section">
+            <div class="grid-layout">
+                <div class="welcome-card">
+                    <h2>Welcome to our place!</h2>
+                    <p>I built this tiny interactive website to put together some of my favorite letters, pictures, and memories into an digital scrapbook sandbox.</p>
+                    <p>Take your time looking around through the tabs above! There are a couple letters to check out, an image grid, and a jigsaw puzzle to piece back together.</p>
+                </div>
+                <div class="action-card">
+                    <p style="font-weight: 600; color: #6b5256; line-height: 1.4;">Ready to open up the canvas environment layer?</p>
+                    <button class="universe-btn" onclick="launchUniverseOverlay()">Launch Universe ✨</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Letters Scrapbook Container -->
+        <div id="letters-section" class="section hidden">
+            <div class="letter-row">
+                <div class="letter-item">
+                    <div class="letter-header" onclick="toggleLetter('letter1')"><span>Letter #1 — First Encounters</span><span>▼</span></div>
+                    <div id="letter1" class="letter-body">Write your first letter contents here...</div>
+                </div>
+                <div class="letter-item">
+                    <div class="letter-header" onclick="toggleLetter('letter2')"><span>Letter #2 — Through the Days</span><span>▼</span></div>
+                    <div id="letter2" class="letter-body">Write your second letter contents here...</div>
+                </div>
+                <div class="letter-item">
+                    <div class="letter-header" onclick="toggleLetter('letter3')"><span>Letter #3 — Small Moments</span><span>▼</span></div>
+                    <div id="letter3" class="letter-body">Write your third letter contents here...</div>
+                </div>
+                <div class="letter-item">
+                    <div class="letter-header" onclick="toggleLetter('letter4')"><span>Letter #4 — Future Steps</span><span>▼</span></div>
+                    <div id="letter4" class="letter-body">Write your fourth letter contents here...</div>
+                </div>
+                <div class="letter-item" style="border-left-color: var(--dark-pink);">
+                    <div class="letter-header" onclick="togglePasswordGate()"><span>🔒 Letter #5 — My Secret Password Letter</span><span>▼</span></div>
+                    <div id="letter5-gate" class="password-box">
+                        <p style="margin-bottom: 12px; color: #6b5256; font-size: 0.9rem;">Enter our anniversary date to unlock (MMDDYYYY):</p>
+                        <input type="password" id="letter5-password" placeholder="••••••••">
+                        <button onclick="checkLetterPassword()">Unlock</button>
+                        <p id="pw-error" class="error-txt">That's not the right date! Try again context hints. 🤔</p>
+                    </div>
+                    <div id="letter5" class="letter-body" style="background-color: #fcf6ff;">Write your final unlocked password-protected letter contents here...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Album Gallery Grid Grid -->
+        <div id="photos-section" class="section hidden">
+            <div class="photo-matrix">
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo1.png" alt="Memory 1"><div class="photo-desc">Memory Piece 1</div></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo2.png" alt="Memory 2"><div class="photo-desc">Memory Piece 2</div></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo3.png" alt="Memory 3"><div class="photo-desc">Memory Piece 3</div></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo4.png" alt="Memory 4"><div class="photo-desc">Memory Piece 4</div></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo5.png" alt="Memory 5"><div class="photo-desc">Memory Piece 5</div></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo6.png" alt="Memory 6"><div class="photo-desc">Memory Piece 6</div></div>
+            </div>
+        </div>
+
+        <!-- Jigsaw Puzzle Sandbox Panel -->
+        <div id="puzzle-section" class="section hidden">
+            <div class="puzzle-container">
+                <p style="margin-bottom: 20px; text-align: center; color: #6b5256;">Drag and piece together the scattered blocks to form the hidden image picture scene!</p>
+                <div id="puzzle-board"></div>
+                <div id="win-message">🎉 Incredible job! You re-assembled the memory perfectly! ✨</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Image Lightbox Modal Wrapper -->
+    <div id="lightboxOverlay">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Enlarged View">
+    </div>
+
+    <!-- Interactive Canvas Universe Modals View screen -->
+    <div id="universe-overlay">
+        <div class="universe-nav-bar">
+            <button class="exit-univ-btn" onclick="exitUniverseOverlay()">Close Canvas ×</button>
+        </div>
+        
+        <!-- Candle Gate Screen Layout -->
+        <div id="candle-gate">
+            <div class="candle-container" onclick="extinguishCandle(event)">
+                <div class="candle-stick"><div class="candle-wick"></div><div id="candle-flame" class="candle-flame"></div></div>
+            </div>
+            <div class="candle-instructions">Click the lit candle to blow out the light and wake up the universe system!</div>
+        </div>
+
+        <div id="universe-text">
+            <h2>Our Growing Universe</h2>
+            <p>Watch as our space takes form step by step.</p>
+        </div>
+
+        <canvas id="loveTreeCanvas"></canvas>
+    </div>
+
+    <script>
+        let loveTreeAnimId = null;
         const branchQueue = [];
         const heartPetals = [];
         const scatteredLilies = [];
@@ -74,8 +738,8 @@ let loveTreeAnimId = null;
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(btn => btn.classList.remove('active'));
             
-            if(event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
+            if(window.event && window.event.currentTarget) {
+                window.event.currentTarget.classList.add('active');
             }
 
             if(sectionName === 'puzzle') {
@@ -442,3 +1106,6 @@ let loveTreeAnimId = null;
                 launchUniverseOverlay();
             }
         });
+    </script>
+</body>
+</html>
