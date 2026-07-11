@@ -17,7 +17,7 @@
             position: relative;
         }
 
-        /* FIXED: CSS Floating Heart Background System Restored */
+        /* CSS Floating Heart Background System */
         .background-hearts {
             position: fixed;
             top: 0;
@@ -31,7 +31,7 @@
         .bg-heart {
             position: absolute;
             bottom: -50px;
-            background-color: rgba(255, 77, 109, 0.15);
+            background-color: rgba(255, 77, 109, 0.12);
             display: inline-block;
             height: 30px;
             margin: 0 10px;
@@ -41,7 +41,7 @@
         }
         .bg-heart:before, .bg-heart:after {
             content: "";
-            background-color: rgba(255, 77, 109, 0.15);
+            background-color: rgba(255, 77, 109, 0.12);
             border-radius: 50%;
             height: 30px;
             position: absolute;
@@ -248,7 +248,9 @@
             background: #ffe5ec; padding: 15px; border-radius: 8px; font-weight: bold;
         }
 
-        /* 5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE */
+        /* =====================================================================
+           5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
+           ===================================================================== */
         #universe-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -356,7 +358,7 @@
     <!-- BACKGROUND FLOATING HEARTS -->
     <div class="background-hearts" id="heartsContainer"></div>
 
-    <!-- 1. INTRO SYSTEM -->
+    <!-- 1. INTRO SYSTEM: CLICK GIFT TO OPEN SITE -->
     <div id="intro-overlay">
         <h2 style="color: #ff4d6d; margin-bottom: 20px;">You have received a gift! 🎁</h2>
         <div class="gift-box" onclick="openGiftBox(event)">🎁</div>
@@ -370,13 +372,16 @@
             <p>I made this simple coding just for you so.. low expectation please 🙏 </p>
         </div>
 
+        <!-- CORE SITE NAVIGATION BAR -->
         <div class="tabs">
             <button class="tab-btn" onclick="showSection('letters')">SECETS Letters</button>
             <button class="tab-btn" onclick="showSection('photos')">Photosss</button>
             <button class="tab-btn" onclick="showSection('puzzle')">Birthday Puzzle!!</button>
+            <!-- UNLOCKED LATER BY THE 5TH LETTER PASSWORD -->
             <button class="tab-btn" id="secret-tab-btn" onclick="launchUniverseOverlay()">Super Secret ❤️</button>
         </div>
 
+        <!-- HOME CONTENT WRAPPER -->
         <div id="home-section" class="content-section">
             <h3>Select a tab above to unlock your birthday gifts(pls)</h3>
             <p>Take your time exploring each one.(super pls)</p>
@@ -388,20 +393,44 @@
             <p>Click an envelope to open it wink wink</p>
             
             <div class="letter-envelope" onclick="toggleLetter('letter1')">✉️ Secret Letter #1</div>
-            <div id="letter1" class="letter-content">Dear Lilou, HIIII I AM HOPING YOU ARE READING THIS IN CHRONOLOGICAL ORDER..Happy 15th birthday! See, now that you're finally 15, our age gap doesn't look quite as wild as 14 to 17... though I guess that just lasts until next year..shucks ... [truncated text]</div>
+            <div id="letter1" class="letter-content">Dear Lilou, HIIII I AM HOPING YOU ARE READING THIS IN CHRONOLOGICAL ORDER..Happy 15th birthday! See, now that you're finally 15, our age gap doesn't look quite as wild as 14 to 17... though I guess that just lasts until next year..shucks
+
+    You've helped me get through so many things that you don't even realize. It's so easy for me to love you because you're the one person I can trust to have my back, no question. I am so lucky that I get to greet you today, and I am so thankful that you keep pushing through every single day. Even with your promise to me to not do anything harsh, choosing to live and stay strong when things get heavy is a massive decision. You make me so incredibly happy just by being here.
+
+    I know I don't know absolutely everything about you yet, and there's still so much left for me to see and know. But I am so glad I get to watch you grow over the next few years from now on. Who knows, maybe one day I'll look over and find out you're actually left-handed or something.
+
+    Thank you for being in my life, nene(get it cause it's what you are using rn). Thank you for living. I love you, and I really hope I get to greet you on your next birthday just like this.</div>
             
             <div class="letter-envelope" onclick="toggleLetter('letter2')">✉️ Secret Letter #2</div>
-            <div id="letter2" class="letter-content">How Much I Love You (The Website is Just a Little Thing)... [truncated text]</div>
+            <div id="letter2" class="letter-content">How Much I Love You (The Website is Just a Little Thing)
+    Hey Ren(with a bunch of n so it doesn't look threatening),
+
+    Happy Birthday! I hope you're liking your little corner of the internet so far.(rate me as a 5 star crammer)
+
+    I know building this website might seem like a lot, but honestly? It's just a tiny, little thing compared to how much I actually want to do for you. If I could code a whole universe just to make you smile on your birthday, I’d probably try to do that too (though the bugs would be a nightmare).
+
+    I want you to know how deeply I love you. There really isn't a limit to the lengths I would go just to make sure you feel safe, happy, and cared for, and I hope you know that. This site is just a small reflection of a little corner in the internet of new memories and secret notes because you deserve to have things made just for you. You deserve the absolute world, Ren. Mwahh
+
+    Enjoy your day, your cake, the mall, and remember that I’m always in your corner, cheering you on. This is just the beginning of the things I want to do for you.</div>
             
             <div class="letter-envelope" onclick="toggleLetter('letter3')">✉️ Secret Letter #3</div>
-            <div id="letter3" class="letter-content">Dear Rhiane, This letter is a serious one... [truncated text]</div>
+            <div id="letter3" class="letter-content">Dear Rhiane,
+
+    This letter is a serious one, because I want to make sure you know exactly where my head and my heart are at. (with very serious monotone)
+
+    Even though we have this label of being "reserved" right now, I want you to know that I don't mind it at all. To me, it's as real as it gets, frfr. I am completely dead set and 100% sure about you. I don't want anybody else, and I am choosing to be completely, exclusively yours during these next few, just talking and having fun with each other prescence
+
+    When those 4 years are finally over, my plan would never change, I want to court you properly. I'm willing to wait even if I am impatient but for you I will change, to grow not just me, but you also so us:3, and to be right here beside you through all of it because you are what I call the goal of my life. You are the only person I want to look forward to.
+
+    Happy 15th birthday, my favorite person. Keep your heads up, don't give up even if it gets outrociously bad, don't blame yourself and I’m so glad I get to be somebody that you can call yours without feeling embarassed, I love you so much.</div>
 
             <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
-            <div id="letter4" class="letter-content">HIII LEE, this is purely assuming that you are reading the letter first... [truncated text]</div>
+            <div id="letter4" class="letter-content">HIII LEE, this is purely assuming that you are reading the letter first or that you completely skipped this and immediately went for the puzzle, well anyway 
+            This simply just serves as a hint! since it is a bit tedious to do all of this on your own, and since it is indeed your birthday so I will tell you what to do, so 
+            Trust me and just finish the puzzle, if you are wondering how you are going to do that... well it is one of the image in photos, I assume after seeing or realizing that you won't need other more hints... goodluck at the end of this puzzle there will
+            be another special thing for you, if you recognize it congratulation pffff, yes it is one of your repost which gave me the idea to make a website in the first place. Anyway enough yapping go solve the code or that you already did it, Mwahhh</div>
             
-            <div class="letter-envelope" onclick="toggleLetter('letter4')">✉️ Secret Letter #4</div>
-            <div id="letter4" class="letter-content">HIII LEE, this is purely assuming that you are reading the letter first... [truncated text]</div>
-            
+            <!-- Password locked envelope -->
             <div class="letter-envelope" onclick="togglePasswordGate()">🔒 Secret Letter #5 (Password Locked!)</div>
             <div id="letter5-gate" class="password-gate">
                 <input type="password" id="letter5-password" class="pw-input" placeholder="Enter secret code...">
@@ -409,20 +438,61 @@
                 <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
             </div>
             
-            <div id="letter5" class="letter-content">Happy birthday, baby ❤️ ... [truncated text]</div>
+            <!-- CONTENT OF LETTER 5 -->
+            <div id="letter5" class="letter-content">Happy birthday, baby ❤️
+
+    To finally finish and open your last gift, you need to answer this riddle:
+
+    "I gloom into the silence for you to have to go tonight, why must time be a bitch at the worst seconds. I grithed my teeth and showed no mercy for I went to the end of the story to write a misery. It was a punishment for you to do, I hope THIS reminds you of me everytime you go."</div>
         </div>
 
         <!-- 3. PHOTOS SECTION -->
         <div id="photos-section" class="content-section hidden">
             <h3>📸 Just.. my photo dump atp</h3>
             <p>Click any photo to open it full size or not....this is embarassing AAa</p>
+            
             <div class="photo-grid">
-                <!-- Photo grid loops remain perfectly matching -->
                 <div class="photo-card" onclick="openLightbox(this)"><img src="photo (1).jpg" alt="Memory 1"></div>
                 <div class="photo-card" onclick="openLightbox(this)"><img src="photo (2).jpg" alt="Memory 2"></div>
                 <div class="photo-card" onclick="openLightbox(this)"><img src="photo (3).jpg" alt="Memory 3"></div>
                 <div class="photo-card" onclick="openLightbox(this)"><img src="photo (4).jpg" alt="Memory 4"></div>
                 <div class="photo-card" onclick="openLightbox(this)"><img src="photo (5).jpg" alt="Memory 5"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (6).jpg" alt="Memory 6"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (7).jpg" alt="Memory 7"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (8).jpg" alt="Memory 8"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (9).jpg" alt="Memory 9"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (10).jpg" alt="Memory 10"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (11).jpg" alt="Memory 11"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (12).jpg" alt="Memory 12"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (13).jpg" alt="Memory 13"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (14).jpg" alt="Memory 14"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (15).jpg" alt="Memory 15"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (16).jpg" alt="Memory 16"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (17).jpg" alt="Memory 17"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (18).jpg" alt="Memory 18"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (19).jpg" alt="Memory 19"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (20).jpg" alt="Memory 20"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (21).jpg" alt="Memory 21"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (22).jpg" alt="Memory 22"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (23).jpg" alt="Memory 23"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (24).jpg" alt="Memory 24"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (25).jpg" alt="Memory 25"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (26).jpg" alt="Memory 26"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (27).jpg" alt="Memory 27"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (28).jpg" alt="Memory 28"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (29).jpg" alt="Memory 29"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (30).jpg" alt="Memory 30"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (31).jpg" alt="Memory 31"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (32).jpg" alt="Memory 32"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (33).jpg" alt="Memory 33"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (34).jpg" alt="Memory 34"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (35).jpg" alt="Memory 35"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (36).jpg" alt="Memory 36"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (37).jpg" alt="Memory 37"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (38).jpg" alt="Memory 38"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (39).jpg" alt="Memory 39"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (40).jpg" alt="Memory 40"></div>
+                <div class="photo-card" onclick="openLightbox(this)"><img src="photo (41).jpg" alt="Memory 41"></div>
             </div>
         </div>
 
@@ -430,22 +500,31 @@
         <div id="puzzle-section" class="content-section hidden">
             <h3>🧩 Drag the pieces back to their correct spots</h3>
             <p>They will auto-snap and stick cleanly when you get them close enough.</p>
+            
             <div id="puzzle-board"></div>
+            
             <button class="tab-btn" onclick="initPuzzle()" style="margin-top:10px;">Scramble / Reset</button>
-            <div id="win-message">🎉 GOOD JOB BABYYY 🎉</div>
+
+            <div id="win-message">
+                🎉 GOOD JOB BABYYY 🎉<br>
+                "Congratulation you solved one of the first puzzle in this website(read the 4th letter if you solved this without hint pls). Yes, there are hidden codes but they will be shown when the time comes. For now use your birthday to open the 5th letter,month/day/year"
+            </div>
         </div>
     </div>
 
-    <!-- LIGHTBOX SYSTEM -->
+    <!-- LIGHTBOX SYSTEM CONTAINER -->
     <div id="lightboxOverlay" class="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close">&times;</span>
-        <img class="lightbox-content" id="lightboxImg" alt="Lightbox display">
+        <img class="lightbox-content" id="lightboxImg">
     </div>
 
-    <!-- 5. THE SUPER SECRET VIEW -->
+    <!-- =====================================================================
+       5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE UNIVERSE
+       ===================================================================== -->
     <div id="universe-overlay">
         <button class="back-to-site-btn" onclick="exitUniverseOverlay()">← Go Back</button>
         
+        <!-- THE DARK CANDLE INTERACTION GATE LAYER -->
         <div id="candle-gate">
             <h3 style="color: #ffe5ec; font-size: 1.4rem; margin-bottom: 40px; text-shadow: 0 2px 10px rgba(255, 77, 109, 0.5);">
                 Make a wish and click the candle to blow it out... 🕯️
@@ -471,13 +550,18 @@
         let loveTreeAnimId = null;
         const branchQueue = [];
         const heartPetals = [];
-        
-        // FIXED: Global array records absolute history layout points of branches to keep them visible
-        const historicalBranchesCache = []; 
+        const scatteredLilies = [];
+        const petalsTotal = 150;
 
+        // Image loading instantiation for your specific custom image file
+        const lilyImage = new Image();
+        lilyImage.src = 'Lilies.png'; 
+        let lilyImageLoaded = false;
+        lilyImage.onload = () => { lilyImageLoaded = true; };
+
+        // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
             const container = document.getElementById('heartsContainer');
-            container.innerHTML = '';
             const heartCount = 25; 
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
@@ -491,6 +575,7 @@
         }
         window.addEventListener('DOMContentLoaded', initHeartsBackground);
 
+        // INTRO BOX MECHANICS
         function openGiftBox(event) {
             spawnConfetti(event.clientX, event.clientY);
             const overlay = document.getElementById('intro-overlay');
@@ -498,6 +583,7 @@
             setTimeout(() => overlay.remove(), 800);
         }
 
+        // CONFETTI ENGINE
         function spawnConfetti(clientX, clientY) {
             const emojis = ['🎉', '✨', '💖', '🧁', '🌸', '🎁'];
             for (let i = 0; i < 35; i++) {
@@ -506,25 +592,39 @@
                 confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 confetti.style.left = clientX + 'px';
                 confetti.style.top = clientY + 'px';
+                
                 const angle = Math.random() * Math.PI * 2;
                 const distance = 80 + Math.random() * 180;
-                confetti.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
-                confetti.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                confetti.style.setProperty('--x', `${x}px`);
+                confetti.style.setProperty('--y', `${y}px`);
+                
                 document.body.appendChild(confetti);
                 setTimeout(() => confetti.remove(), 1200);
             }
         }
 
+        // TAB NAVIGATION SYSTEM
         function showSection(sectionName) {
             document.getElementById('home-section').classList.add('hidden');
             document.getElementById('letters-section').classList.add('hidden');
             document.getElementById('photos-section').classList.add('hidden');
             document.getElementById('puzzle-section').classList.add('hidden');
+            
             document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(btn => btn.classList.remove('active'));
-            if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
-            if (sectionName === 'puzzle') initPuzzle();
+            
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+
+            if(sectionName === 'puzzle') {
+                initPuzzle();
+            }
         }
 
         function toggleLetter(letterId) {
@@ -535,261 +635,346 @@
         function togglePasswordGate() {
             var gate = document.getElementById('letter5-gate');
             var letter = document.getElementById('letter5');
-            if (letter.style.display === "block") { letter.style.display = "none"; return; }
+            
+            if (letter.style.display === "block") {
+                letter.style.display = "none";
+                return;
+            }
+            
             gate.style.display = (gate.style.display === "block") ? "none" : "block";
+            document.getElementById('pw-error').style.display = "none";
         }
 
         function checkLetterPassword() {
-            if (document.getElementById('letter5-password').value === "07112011") {
-                document.getElementById('letter5-gate').style.display = "none"; 
-                document.getElementById('letter5').style.display = "block"; 
+            const userInput = document.getElementById('letter5-password').value;
+            const errorMsg = document.getElementById('pw-error');
+            const letter = document.getElementById('letter5');
+            const gate = document.getElementById('letter5-gate');
+            const correctPassword = "07112011"; 
+
+            if (userInput === correctPassword) {
+                gate.style.display = "none"; 
+                letter.style.display = "block"; 
+                errorMsg.style.display = "none";
                 document.getElementById('secret-tab-btn').style.display = "inline-block";
             } else {
-                document.getElementById('pw-error').style.display = "block";
+                errorMsg.style.display = "block"; 
             }
         }
 
+        // IMAGE LIGHTBOX
         function openLightbox(element) {
-            document.getElementById('lightboxImg').src = element.querySelector('img').src;
-            document.getElementById('lightboxOverlay').style.display = "flex";
+            const imgSrc = element.querySelector('img').src;
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('lightboxOverlay').style.display = 'flex';
         }
-        function closeLightbox() { document.getElementById('lightboxOverlay').style.display = "none"; }
 
-        // PUZZLE SYSTEM ENGINE
-        let activePiece = null; let startX = 0, startY = 0;
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').style.display = 'none';
+        }
+
+        // 5x5 DRAG AND DROP JIGSAW ENGINE
+        const rows = 5; const cols = 5; const pieceSize = 100; 
         function initPuzzle() {
             const board = document.getElementById('puzzle-board');
+            board.innerHTML = ''; 
             document.getElementById('win-message').style.display = 'none';
-            board.innerHTML = '';
-            const slots = [];
-            for (let r = 0; r < 5; r++) { for (let c = 0; c < 5; c++) { slots.push({ correctX: c * 100, correctY: r * 100 }); } }
-            slots.forEach((slot, index) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                piece.dataset.index = index; piece.dataset.correctX = slot.correctX; piece.dataset.correctY = slot.correctY;
-                piece.style.backgroundPosition = `-${(index % 5) * 100}px -${Math.floor(index / 5) * 100}px`;
-                piece.style.left = Math.random() * 400 + 'px'; piece.style.top = Math.random() * 400 + 'px';
-                piece.dataset.snapped = "false";
-                piece.addEventListener('mousedown', startDrag);
-                board.appendChild(piece);
-            });
-        }
-        function startDrag(e) {
-            if (this.dataset.snapped === "true") return; e.preventDefault(); activePiece = this;
-            startX = e.clientX - activePiece.offsetLeft; startY = e.clientY - activePiece.offsetTop;
-            document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', endDrag);
-        }
-        function dragMove(e) {
-            if (!activePiece) return;
-            activePiece.style.left = Math.max(0, Math.min(e.clientX - startX, 400)) + 'px';
-            activePiece.style.top = Math.max(0, Math.min(e.clientY - startY, 400)) + 'px';
-        }
-        function endDrag() {
-            if (!activePiece) return;
-            const cX = activePiece.offsetLeft, cY = activePiece.offsetTop;
-            const tX = parseInt(activePiece.dataset.correctX), tY = parseInt(activePiece.dataset.correctY);
-            if (Math.abs(cX - tX) < 25 && Math.abs(cY - tY) < 25) {
-                activePiece.style.left = tX + 'px'; activePiece.style.top = tY + 'px'; activePiece.dataset.snapped = "true";
-                checkPuzzleWin();
-            }
-            document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', endDrag);
-            activePiece = null;
-        }
-        function checkPuzzleWin() {
-            if (Array.from(document.querySelectorAll('.puzzle-piece')).every(p => p.dataset.snapped === "true")) {
-                document.getElementById('win-message').style.display = 'block';
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    piece.style.backgroundPosition = `-${c * pieceSize}px -${r * pieceSize}px`;
+                    
+                    const targetX = c * pieceSize;
+                    const targetY = r * pieceSize;
+                    piece.dataset.correctX = targetX;
+                    piece.dataset.correctY = targetY;
+                    piece.dataset.solved = "false";
+
+                    const randomX = Math.random() * (500 - pieceSize);
+                    const randomY = Math.random() * (500 - pieceSize);
+                    piece.style.left = randomX + 'px';
+                    piece.style.top = randomY + 'px';
+
+                    setupDragAndDrop(piece);
+                    board.appendChild(piece);
+                }
             }
         }
 
-        /* 5. CANVAS RENDER MACHINE WITH BRANCHING AND LILIES */
+        function setupDragAndDrop(piece) {
+            let active = false; let currentX; let currentY; let initialX; let initialY;
+            let xOffset = parseFloat(piece.style.left); let yOffset = parseFloat(piece.style.top);
+
+            piece.addEventListener('mousedown', dragStart);
+            piece.addEventListener('touchstart', dragStart, { passive: false });
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('touchmove', drag, { passive: false });
+            window.addEventListener('mouseup', dragEnd);
+            window.addEventListener('touchend', dragEnd);
+
+            function dragStart(e) {
+                if (piece.dataset.solved === "true") return;
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset; initialY = e.clientY - yOffset;
+                }
+                active = true;
+            }
+            function drag(e) {
+                if (!active) return;
+                e.preventDefault();
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX; currentY = e.clientY - initialY;
+                }
+                if (currentX < 0) currentX = 0; if (currentY < 0) currentY = 0;
+                if (currentX > 500 - pieceSize) currentX = 500 - pieceSize;
+                if (currentY > 500 - pieceSize) currentY = 500 - pieceSize;
+                xOffset = currentX; yOffset = currentY;
+                piece.style.left = currentX + 'px'; piece.style.top = currentY + 'px';
+            }
+            function dragEnd() {
+                if (!active) return; active = false;
+                const correctX = parseFloat(piece.dataset.correctX); const correctY = parseFloat(piece.dataset.correctY);
+                if (Math.abs(xOffset - correctX) < 20 && Math.abs(yOffset - correctY) < 20) {
+                    piece.style.left = correctX + 'px'; piece.style.top = correctY + 'px';
+                    xOffset = correctX; yOffset = correctY;
+                    piece.dataset.solved = "true"; piece.style.boxShadow = "none";
+                    piece.style.cursor = "default"; piece.style.zIndex = "1";
+                    checkWinCondition();
+                }
+            }
+        }
+
+        function checkWinCondition() {
+            const allPieces = document.querySelectorAll('.puzzle-piece');
+            let win = true;
+            allPieces.forEach(p => { if (p.dataset.solved !== "true") win = false; });
+            if (win) { document.getElementById('win-message').style.display = 'block'; }
+        }
+
+        // =====================================================================
+        // UNIVERSE GENERATION LIBRARIES: INSTANT BRANCHES & BLOOMING LEAVES
+        // =====================================================================
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
-            document.getElementById('candle-gate').style.opacity = '1';
-            document.getElementById('candle-gate').style.pointerEvents = 'auto';
+            
+            // Show dark gate and burning candle
+            const gate = document.getElementById('candle-gate');
+            gate.style.opacity = '1';
+            gate.style.pointerEvents = 'auto';
             document.getElementById('candle-flame').style.display = 'block';
             document.getElementById('universe-text').style.display = 'none';
-            const canvas = document.getElementById('loveTreeCanvas');
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-            cancelAnimationFrame(loveTreeAnimId);
-        }
-
-        function exitUniverseOverlay() {
-            document.getElementById('universe-overlay').classList.remove('active');
-            cancelAnimationFrame(loveTreeAnimId);
-        }
-
-        function extinguishCandle(e) {
-            spawnConfetti(e.clientX, e.clientY);
-            document.getElementById('candle-flame').style.display = 'none';
-            document.getElementById('candle-gate').style.opacity = '0';
-            document.getElementById('candle-gate').style.pointerEvents = 'none';
-            setTimeout(() => {
-                document.getElementById('universe-text').style.display = 'block';
-                startTreeGrowSystem();
-            }, 800);
-        }
-
-        function startTreeGrowSystem() {
+            
+            if (loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
+            
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-
-            branchQueue.length = 0;
-            heartPetals.length = 0;
-            historicalBranchesCache.length = 0; // Clear old values
-
-            branchQueue.push({
-                x1: canvas.width / 2, y1: canvas.height - 40,
-                angle: -Math.PI / 2, length: 110, thickness: 12,
-                generation: 0
-            });
-
-            loopGrowAnimation(ctx, canvas);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function loopGrowAnimation(ctx, canvas) {
-            if (branchQueue.length > 0) {
-                const currentGen = branchQueue[0].generation;
-                const processBatch = [];
-                
-                while(branchQueue.length > 0 && branchQueue[0].generation === currentGen) {
-                    processBatch.push(branchQueue.shift());
-                }
+        function extinguishCandle(event) {
+            document.getElementById('candle-flame').style.display = 'none';
+            spawnConfetti(event.clientX, event.clientY);
 
-                processBatch.forEach(b => {
-                    const x2 = b.x1 + Math.cos(b.angle) * b.length;
-                    const y2 = b.y1 + Math.sin(b.angle) * b.length;
+            // Open curtains animation
+            const gate = document.getElementById('candle-gate');
+            gate.style.opacity = '0';
+            gate.style.pointerEvents = 'none';
 
-                    // FIXED: Log layout path details to global history cache
-                    historicalBranchesCache.push({ x1: b.x1, y1: b.y1, x2: x2, y2: y2, thickness: b.thickness, gen: b.generation });
+            // Reveal birthday text
+            document.getElementById('universe-text').style.display = 'block';
 
-                    ctx.beginPath();
-                    ctx.moveTo(b.x1, b.y1);
-                    ctx.lineTo(x2, y2);
-                    ctx.strokeStyle = `rgb(${70 + b.generation * 10}, 45, 50)`;
-                    ctx.lineWidth = b.thickness;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
+            // Start Tree & Heart Generation
+            setTimeout(() => {
+                initUniverseTree();
+            }, 600);
+        }
 
-                    if (b.generation < 9) {
-                        const splitCount = 2 + Math.floor(Math.random() * 2);
-                        for (let i = 0; i < splitCount; i++) {
-                            branchQueue.push({
-                                x1: x2, y1: y2,
-                                angle: b.angle + (Math.random() - 0.5) * 0.65,
-                                length: b.length * (0.7 + Math.random() * 0.15),
-                                thickness: b.thickness * 0.7,
-                                generation: b.generation + 1
-                            });
-                        }
-                    } else {
-                        for(let k=0; k<3; k++) {
-                            heartPetals.push({
-                                x: x2 + (Math.random() - 0.5) * 20,
-                                y: y2 + (Math.random() - 0.5) * 20,
-                                size: 4 + Math.random() * 6,
-                                alpha: 0
-                            });
-                        }
-                    }
-                });
-                
-                loveTreeAnimId = setTimeout(() => loopGrowAnimation(ctx, canvas), 80);
-            } else {
-                renderPetalsLoop(ctx, canvas);
+        function exitUniverseOverlay() {
+            document.getElementById('universe-overlay').classList.remove('active');
+            if (loveTreeAnimId) {
+                cancelAnimationFrame(loveTreeAnimId);
+                loveTreeAnimId = null;
             }
         }
 
-        // FIXED: Loop dynamically tracks history states and draws the water lilies on the bottom edge
-        function renderPetalsLoop(ctx, canvas) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function initUniverseTree() {
+            const canvas = document.getElementById('loveTreeCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
             
-            // 1. Redraw the branches from cache so the tree never vanishes
-            historicalBranchesCache.forEach(b => {
-                ctx.beginPath();
-                ctx.moveTo(b.x1, b.y1);
-                ctx.lineTo(b.x2, b.y2);
-                ctx.strokeStyle = `rgb(${70 + b.gen * 10}, 45, 50)`;
-                ctx.lineWidth = b.thickness;
+            branchQueue.length = 0;
+            heartPetals.length = 0;
+            scatteredLilies.length = 0;
+
+            // Generate entire tree geometry structures instantly
+            createForkStructure(canvas.width / 2, canvas.height, 12, 100, -Math.PI / 2, 0);
+
+            // Set all branch draws to fully processed instantly
+            branchQueue.forEach(b => {
+                b.drawProgress = b.length;
+                b.processed = true;
+            });
+
+            // Pre-seed falling/drifting petal animations
+            for (let i = 0; i < petalsTotal; i++) {
+                heartPetals.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: 4 + Math.random() * 5,
+                    opacity: 0.2 + Math.random() * 0.6,
+                    color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
+                    speedY: 0.5 + Math.random() * 1.5,
+                    speedX: (Math.random() - 0.5) * 1,
+                    waveOffset: Math.random() * 100,
+                    state: 'drift'
+                });
+            }
+
+            // Generate 12 random bottom spots for Lillies.png
+            for (let i = 0; i < 12; i++) {
+                scatteredLilies.push({
+                    x: Math.random() * (canvas.width - 60) + 10,
+                    y: canvas.height - (30 + Math.random() * 40),
+                    width: 45 + Math.random() * 20,
+                    height: 45 + Math.random() * 20,
+                    opacity: 0 // Will fade in gently
+                });
+            }
+
+            runUniverseEngineLoop();
+        }
+
+        // Generate entire tree geometry into structure queue
+        function createForkStructure(x, y, thick, len, angle, depth) {
+            if (depth > 11) return; 
+
+            const x2 = x + Math.cos(angle) * len;
+            const y2 = y + Math.sin(angle) * len;
+
+            branchQueue.push({
+                x1: x, y1: y,
+                x2: x2, y2: y2,
+                thickness: thick,
+                length: len,
+                angle: angle,
+                depth: depth,
+                processed: false,
+                drawProgress: 0 
+            });
+
+            if (depth < 11) {
+                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle - (0.15 + Math.random() * 0.25), depth + 1);
+                createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle + (0.15 + Math.random() * 0.25), depth + 1);
+                
+                if(Math.random() > 0.7) {
+                    createForkStructure(x2, y2, thick * 0.6, len * 0.6, angle + (Math.random() * 0.4 - 0.2), depth + 1);
+                }
+            } else {
+                // Terminal point reached: Spawn slow blooming leaves on branch tips
+                for (let k = 0; k < 6; k++) {
+                    heartPetals.push({
+                        cx: x2 + (Math.random() * 30 - 15),
+                        cy: y2 + (Math.random() * 30 - 15),
+                        size: 4 + Math.random() * 5,
+                        opacity: 0.1,
+                        targetOpacity: 0.7 + Math.random() * 0.3,
+                        color: Math.random() > 0.45 ? '#ff4d6d' : '#ffb3c1',
+                        scale: 0.01,
+                        targetScale: 1,
+                        state: 'bloom' 
+                    });
+                }
+            }
+        }
+
+        function runUniverseEngineLoop() {
+            const canvas = document.getElementById('loveTreeCanvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw clean baseline backdrop floor
+            const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 80);
+            groundGrad.addColorStop(0, '#fbc4b6');
+            groundGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = groundGrad;
+            ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+
+            // Render all trunk lines instantly
+            branchQueue.forEach(b => {
+                ctx.strokeStyle = '#3a221d'; 
+                ctx.lineWidth = b.thickness; 
+                ctx.lineCap = 'round';
+                ctx.beginPath(); 
+                ctx.moveTo(b.x1, b.y1); 
+                ctx.lineTo(b.x2, b.y2); 
                 ctx.stroke();
             });
 
-            // 2. FIXED: Redraw Water Lilies along the base pond coordinates
-            drawLiliesBaseLayer(ctx, canvas);
-
-            // 3. Draw leaves stepping up opacity smoothly
-            let finishedGrowing = true;
+            // Draw and slowly grow branch tips heart leaf physics
             heartPetals.forEach(p => {
-                if (p.alpha < 1) {
-                    p.alpha += 0.05;
-                    finishedGrowing = false;
+                if (p.state === 'bloom') {
+                    if (p.scale < p.targetScale) p.scale += 0.008; // Slower growth rate
+                    if (p.opacity < p.targetOpacity) p.opacity += 0.01;
+                    drawHeartShapePetal(ctx, p.cx, p.cy, p.size * p.scale, p.color, p.opacity);
                 }
-                drawVectorHeartShape(ctx, p.x, p.y, p.size, `rgba(255, ${100 + Math.random() * 40}, ${130 + Math.random() * 20}, ${p.alpha})`);
+
+                if (p.state === 'drift') {
+                    p.y += p.speedY;
+                    p.x += p.speedX + Math.sin(p.y / 30 + p.waveOffset) * 0.5;
+                    if (p.y > canvas.height) {
+                        p.y = -20;
+                        p.x = Math.random() * canvas.width;
+                    }
+                    drawHeartShapePetal(ctx, p.x, p.y, p.size, p.color, p.opacity);
+                }
             });
 
-            if (!finishedGrowing) {
-                loveTreeAnimId = requestAnimationFrame(() => renderPetalsLoop(ctx, canvas));
+            // RENDER SCATTERED LILIES ON THE GROUND
+            if (lilyImageLoaded) {
+                scatteredLilies.forEach(lily => {
+                    if (lily.opacity < 1) lily.opacity += 0.02; // Fade them in elegantly
+                    ctx.save();
+                    ctx.globalAlpha = lily.opacity;
+                    ctx.drawImage(lilyImage, lily.x, lily.y, lily.width, lily.height);
+                    ctx.restore();
+                });
             }
+
+            loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
         }
 
-        // FIXED: Explicitly draws the water lily structures at the base of the canvas
-        function drawLiliesBaseLayer(ctx, canvas) {
-            const surfaceY = canvas.height - 40;
-            
-            // Draw a subtle water reflection bar
-            ctx.fillStyle = "rgba(230, 242, 245, 0.6)";
-            ctx.fillRect(0, surfaceY, canvas.width, 40);
-
-            const lilyPositions = [
-                canvas.width / 2 - 120, canvas.width / 2 - 60,
-                canvas.width / 2 + 60, canvas.width / 2 + 120,
-                canvas.width / 2 - 250, canvas.width / 2 + 250
-            ];
-
-            lilyPositions.forEach((xPos, idx) => {
-                let scale = (idx > 3) ? 0.7 : 1.0; 
-                ctx.save();
-                ctx.translate(xPos, surfaceY + 10);
-                ctx.scale(scale, scale);
-
-                // Lily Pad
-                ctx.beginPath();
-                ctx.ellipse(0, 5, 25, 8, 0, 0, Math.PI * 1.8);
-                ctx.lineTo(0, 5);
-                ctx.fillStyle = "#55a630";
-                ctx.fill();
-
-                // Pink Lily Flower Petals
-                ctx.fillStyle = "#ffccd5";
-                for(let i = 0; i < 5; i++) {
-                    ctx.beginPath();
-                    ctx.ellipse(-10 + (i*5), -2, 6, 12, (i - 2) * 0.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                // Core Center
-                ctx.beginPath();
-                ctx.arc(0, -2, 4, 0, Math.PI * 2);
-                ctx.fillStyle = "#ffb703";
-                ctx.fill();
-
-                ctx.restore();
-            });
-        }
-
-        function drawVectorHeartShape(ctx, x, y, size, colorString) {
+        // CUSTOM VECTOR MATHEMATICAL HEART GRAPHICS
+        function drawHeartShapePetal(ctx, x, y, size, color, alpha) {
             ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.translate(x, y);
-            ctx.rotate(Math.PI);
-            ctx.scale(size / 10, size / 10);
-            ctx.moveTo(0, 0);
-            ctx.bezierCurveTo(-5, -5, -10, 2, 0, 10);
-            ctx.bezierCurveTo(10, 2, 5, -5, 0, 0);
-            ctx.fillStyle = colorString;
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
+            ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
             ctx.fill();
             ctx.restore();
         }
+
+        // Reset geometry matrices safely on viewport resize events
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('loveTreeCanvas');
+            if(canvas && document.getElementById('universe-overlay').classList.contains('active')) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                exitUniverseOverlay();
+                launchUniverseOverlay();
+            }
+        });
     </script>
 </body>
 </html>
