@@ -659,332 +659,315 @@
             }
         }
 
-        // IMAGE LIGHTBOX
-        function openLightbox(element) {
-            const imgSrc = element.querySelector('img').src;
-            document.getElementById('lightboxImg').src = imgSrc;
-            document.getElementById('lightboxOverlay').style.display = 'flex';
+        // ==========================================
+        // PHOTO LIGHTBOX MECHANICS
+        // ==========================================
+        function openLightbox(card) {
+            const img = card.querySelector('img');
+            const lightbox = document.getElementById('lightboxOverlay');
+            const lightboxImg = document.getElementById('lightboxImg');
+            lightboxImg.src = img.src;
+            lightbox.style.display = 'flex';
         }
+
         function closeLightbox() {
             document.getElementById('lightboxOverlay').style.display = 'none';
         }
 
-        // PUZZLE ENGINE CODE
-        let pieces = [];
+        // ==========================================
+        // JIGSAW PUZZLE SYSTEM
+        // ==========================================
+        let puzzlePieces = [];
         const rows = 5;
         const cols = 5;
         const pieceSize = 100;
 
         function initPuzzle() {
             const board = document.getElementById('puzzle-board');
+            const winMessage = document.getElementById('win-message');
             board.innerHTML = '';
-            document.getElementById('win-message').style.display = 'none';
-            pieces = [];
+            winMessage.style.display = 'none';
+            puzzlePieces = [];
 
-            let positions = [];
+            // Create correct positions and random drop spots
             for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) { // Fixed r++ typo back to c++ to eliminate tab hanging
-                    positions.push({ correctX: c * pieceSize, correctY: r * pieceSize, r: r, c: c });
+                for (let c = 0; c < cols; c++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    piece.style.backgroundPosition = `-${c * pieceSize}px -${r * pieceSize}px`;
+                    
+                    // Target correct snap coordinates
+                    const correctX = c * pieceSize;
+                    const correctY = r * pieceSize;
+                    
+                    // Scramble initial random placement
+                    const startX = Math.random() * (500 - pieceSize);
+                    const startY = Math.random() * (500 - pieceSize);
+                    
+                    piece.style.left = startX + 'px';
+                    piece.style.top = startY + 'px';
+                    
+                    piece.dataset.correctX = correctX;
+                    piece.dataset.correctY = correctY;
+                    piece.dataset.solved = "false";
+
+                    // Simple drag functionality
+                    piece.addEventListener('mousedown', startDrag);
+                    piece.addEventListener('touchstart', startDrag, { passive: false });
+
+                    board.appendChild(piece);
+                    puzzlePieces.push(piece);
+                }
+            }
+        }
+
+        function startDrag(e) {
+            const piece = e.currentTarget;
+            if (piece.dataset.solved === "true") return;
+
+            e.preventDefault();
+            const isTouch = e.type === 'touchstart';
+            let startX = isTouch ? e.touches[0].clientX : e.clientX;
+            let startY = isTouch ? e.touches[0].clientY : e.clientY;
+            
+            let originalLeft = parseFloat(piece.style.left);
+            let originalTop = parseFloat(piece.style.top);
+
+            function doDrag(moveEvent) {
+                const currentX = isTouch ? moveEvent.touches[0].clientX : moveEvent.clientX;
+                const currentY = isTouch ? moveEvent.touches[0].clientY : moveEvent.clientY;
+                
+                let newLeft = originalLeft + (currentX - startX);
+                let newTop = originalTop + (currentY - startY);
+
+                // Contain within board boundaries
+                newLeft = Math.max(0, Math.min(400, newLeft));
+                newTop = Math.max(0, Math.min(400, newTop));
+
+                piece.style.left = newLeft + 'px';
+                piece.style.top = newTop + 'px';
+            }
+
+            function stopDrag() {
+                window.removeEventListener('mousemove', doDrag);
+                window.removeEventListener('mouseup', stopDrag);
+                window.removeEventListener('touchmove', doDrag);
+                window.removeEventListener('touchend', stopDrag);
+
+                // Snap Check
+                const currentLeft = parseFloat(piece.style.left);
+                const currentTop = parseFloat(piece.style.top);
+                const targetX = parseFloat(piece.dataset.correctX);
+                const targetY = parseFloat(piece.dataset.correctY);
+
+                // If within 20px, snap perfectly to target
+                if (Math.abs(currentLeft - targetX) < 20 && Math.abs(currentTop - targetY) < 20) {
+                    piece.style.left = targetX + 'px';
+                    piece.style.top = targetY + 'px';
+                    piece.style.cursor = 'default';
+                    piece.style.boxShadow = 'none';
+                    piece.style.border = 'none';
+                    piece.dataset.solved = "true";
+                    checkPuzzleWin();
                 }
             }
 
-            positions.forEach((pos, index) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                piece.style.backgroundPosition = `-${pos.correctX}px -${pos.correctY}px`;
-                
-                const randomX = Math.random() * (500 - pieceSize);
-                const randomY = Math.random() * (500 - pieceSize);
-                
-                piece.style.left = randomX + 'px';
-                piece.style.top = randomY + 'px';
-                
-                piece.dataset.correctX = pos.correctX;
-                piece.dataset.correctY = pos.correctY;
-                piece.dataset.solved = "false";
-
-                makeElementDraggable(piece);
-                board.appendChild(piece);
-                pieces.push(piece);
-            });
-        }
-
-        function makeElementDraggable(elmnt) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            elmnt.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                if (elmnt.dataset.solved === "true") return;
-                e = e || window.event;
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                
-                let newTop = elmnt.offsetTop - pos2;
-                let newLeft = elmnt.offsetLeft - pos1;
-
-                newTop = Math.max(0, Math.min(newTop, 500 - pieceSize));
-                newLeft = Math.max(0, Math.min(newLeft, 500 - pieceSize));
-
-                elmnt.style.top = newTop + "px";
-                elmnt.style.left = newLeft + "px";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                checkSnap(elmnt);
-            }
-        }
-
-        function checkSnap(elmnt) {
-            const currentLeft = parseFloat(elmnt.style.left);
-            const currentTop = parseFloat(elmnt.style.top);
-            const correctX = parseFloat(elmnt.dataset.correctX);
-            const correctY = parseFloat(elmnt.dataset.correctY);
-            const snapTolerance = 25;
-
-            if (Math.abs(currentLeft - correctX) < snapTolerance && Math.abs(currentTop - correctY) < snapTolerance) {
-                elmnt.style.left = correctX + 'px';
-                elmnt.style.top = correctY + 'px';
-                elmnt.dataset.solved = "true";
-                elmnt.style.cursor = "default";
-                elmnt.style.boxShadow = "none";
-                elmnt.style.zIndex = "1";
-                checkPuzzleWin();
-            }
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchmove', doDrag, { passive: false });
+            window.addEventListener('touchend', stopDrag);
         }
 
         function checkPuzzleWin() {
-            const allSolved = pieces.every(p => p.dataset.solved === "true");
+            const allSolved = puzzlePieces.every(p => p.dataset.solved === "true");
             if (allSolved) {
                 document.getElementById('win-message').style.display = 'block';
             }
         }
 
-        /* =====================================================================
-           GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE
-           ==================================================================== */
+        // ==========================================
+        // 5. SUPER SECRET TREE UNIVERSE SYSTEM
+        // ==========================================
         function launchUniverseOverlay() {
-            const secretPasswordInput = prompt("Enter the password to access the Super Secret zone: 🤫");
-            if (secretPasswordInput !== "star" && secretPasswordInput !== "Star") {
-                alert("Incorrect password! Try looking closely at clues or previous keys.");
-                return;
-            }
-
             const overlay = document.getElementById('universe-overlay');
             overlay.classList.add('active');
+            
+            // Reset Candle Gate view state inside overlay
             document.getElementById('candle-gate').style.opacity = '1';
             document.getElementById('candle-gate').style.pointerEvents = 'auto';
             document.getElementById('candle-flame').style.display = 'block';
             document.getElementById('universe-text').style.display = 'none';
             
-            const canvas = document.getElementById('loveTreeCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
-        }
-
-        function exitUniverseOverlay() {
-            const overlay = document.getElementById('universe-overlay');
-            overlay.classList.remove('active');
-            if(loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
-        }
-
-        function extinguishCandle(event) {
-            spawnConfetti(event.clientX, event.clientY);
-            document.getElementById('candle-flame').style.display = 'none';
-            const gate = document.getElementById('candle-gate');
-            gate.style.opacity = '0';
-            gate.style.pointerEvents = 'none';
-            
-            setTimeout(() => {
-                document.getElementById('universe-text').style.display = 'block';
-                startTreeGeneration();
-            }, 800);
-        }
-
-        // Helper path function to draw precise Canvas Hearts
-        function drawHeart(ctx, x, y, size, color) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.translate(x, y);
-            ctx.rotate(Math.PI); // Flips heart upward right side up
-            ctx.moveTo(0, 0);
-            ctx.bezierCurveTo(-size / 2, size / 2, -size * 1.3, -size / 3, 0, -size);
-            ctx.bezierCurveTo(size * 1.3, -size / 3, size / 2, size / 2, 0, 0);
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function startTreeGeneration() {
-            const canvas = document.getElementById('loveTreeCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            ctx.scale(dpr, dpr);
-
+            // Wipe canvas data clean before running drawing engines
+            cancelAnimationFrame(loveTreeAnimId);
             branchQueue = [];
             staticBranches = [];
             canvasHearts = [];
             canvasLilies = [];
+        }
 
-            // 1. Generate drifting canvas backgrounds elements
-            for (let i = 0; i < 30; i++) {
-                canvasHearts.push({
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight,
-                    size: 4 + Math.random() * 8,
-                    speed: 0.5 + Math.random() * 1.2,
-                    opacity: 0.15 + Math.random() * 0.3
-                });
-            }
+        function exitUniverseOverlay() {
+            document.getElementById('universe-overlay').classList.remove('active');
+            cancelAnimationFrame(loveTreeAnimId);
+        }
 
-            // 2. Map coordinates for the Lily file layout across bottom floor
-            for (let i = 0; i < 35; i++) {
-                canvasLilies.push({
-                    x: Math.random() * window.innerWidth - 20,
-                    y: window.innerHeight * 0.85 + Math.random() * (window.innerHeight * 0.12),
-                    width: 30 + Math.random() * 40,
-                    height: 30 + Math.random() * 40
-                });
-            }
-
-            const startX = window.innerWidth / 2;
-            const startY = window.innerHeight * 0.82;
-            const initialLength = Math.min(window.innerHeight * 0.18, 120);
+        function extinguishCandle(event) {
+            // Blow out flame visual instantly
+            document.getElementById('candle-flame').style.display = 'none';
             
+            // Animate overlay fading out to expose canvas space
+            const gate = document.getElementById('candle-gate');
+            gate.style.opacity = '0';
+            gate.style.pointerEvents = 'none';
+
+            // Fire up Canvas systems
+            setTimeout(() => {
+                initUniverseCanvas();
+            }, 800);
+        }
+
+        // CANVAS TREE GENERATOR & RENDERING LOOP
+        function initUniverseCanvas() {
+            const canvas = document.getElementById('loveTreeCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Resize handler scale mapping
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Seed structure root coordinates for tree growth calculations
+            const rootX = canvas.width / 2;
+            const rootY = canvas.height - 120;
+            const initialLength = Math.min(canvas.height * 0.22, 140);
+            
+            // Queue first base trunk branch line segments
             branchQueue.push({
-                startX: startX, startY: startY,
+                x1: rootX, y1: rootY,
                 angle: -Math.PI / 2,
                 length: initialLength,
                 thickness: 12,
-                generation: 0,
-                progress: 0
+                progress: 0,
+                generation: 0
             });
 
-            if(loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
-            runTreeLoop(ctx, window.innerWidth, window.innerHeight);
-        }
+            document.getElementById('universe-text').style.display = 'block';
 
-        function runTreeLoop(ctx, w, h) {
-            ctx.clearRect(0, 0, w, h);
-            
-            // DRAW AND UPDATE DRIFTING BACKGROUND HEARTS
-            canvasHearts.forEach(hItem => {
-                hItem.y -= hItem.speed;
-                if (hItem.y < -20) hItem.y = h + 20; 
-                drawHeart(ctx, hItem.x, hItem.y, hItem.size, `rgba(255, 77, 109, ${hItem.opacity})`);
-            });
+            // Main continuous frame painter thread loop
+            function frameUpdate() {
+                // Background soft clear color overlay path
+                ctx.fillStyle = '#fffbfa';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // DRAW FILE IMAGE FIELDS FOR THE LILIES
-            canvasLilies.forEach(lily => {
-                ctx.drawImage(lilyImage, lily.x, lily.y, lily.width, lily.height);
-            });
-
-            // DRAW ALL STATIC COMPLETED BRANCHES & FULL LEAF CLUSTERS
-            staticBranches.forEach(b => {
-                ctx.beginPath();
-                ctx.moveTo(b.startX, b.startY);
-                ctx.lineTo(b.endX, b.endY);
-                ctx.strokeStyle = '#5c3d46';
-                ctx.lineWidth = b.thickness;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-
-                // DENSE, LUSH HEART LEAF CLUSTER METHOD
-                if (b.hasLeaves) {
-                    // Central cluster hearts
-                    drawHeart(ctx, b.endX, b.endY, 11, '#ff4d6d');
-                    drawHeart(ctx, b.endX - 4, b.endY - 5, 8, '#ff758f');
-                    drawHeart(ctx, b.endX + 4, b.endY - 5, 8, '#ff8fa3');
-                    
-                    // Flourishing side offsets for fuller foliage visual profile
-                    drawHeart(ctx, b.endX - 15, b.endY + 4, 7, '#ffb3c1');
-                    drawHeart(ctx, b.endX + 10, b.endY + 4, 7, '#ffccd5');
-                    drawHeart(ctx, b.endX - 6, b.endY - 11, 6, '#ff4d6d');
-
-                }
-            });
-
-            // PROCESS CURRENTLY GROWING BRANCH MODULES
-            if (branchQueue.length > 0) {
-                let nextQueue = [];
-
-                branchQueue.forEach(b => {
-                    b.progress += 4; 
-                    if (b.progress > b.length) b.progress = b.length;
-
-                    const endX = b.startX + Math.cos(b.angle) * b.progress;
-                    const endY = b.startY + Math.sin(b.angle) * b.progress;
-
+                // 1. Draw older, grown branch structures safely cached
+                staticBranches.forEach(b => {
                     ctx.beginPath();
-                    ctx.moveTo(b.startX, b.startY);
-                    ctx.lineTo(endX, endY);
                     ctx.strokeStyle = '#5c3d46';
                     ctx.lineWidth = b.thickness;
                     ctx.lineCap = 'round';
+                    ctx.moveTo(b.x1, b.y1);
+                    ctx.lineTo(b.x2, b.y2);
+                    ctx.stroke();
+                });
+
+                // 2. Compute and extend active real-time growth lines
+                let nextQueue = [];
+                branchQueue.forEach(b => {
+                    b.progress += 0.04; // Control runtime animation speed vectors
+                    if (b.progress > 1) b.progress = 1;
+
+                    const currentLength = b.length * b.progress;
+                    const x2 = b.x1 + Math.cos(b.angle) * currentLength;
+                    const y2 = b.y1 + Math.sin(b.angle) * currentLength;
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#5c3d46';
+                    ctx.lineWidth = b.thickness;
+                    ctx.lineCap = 'round';
+                    ctx.moveTo(b.x1, b.y1);
+                    ctx.lineTo(x2, y2);
                     ctx.stroke();
 
-                    if (b.progress >= b.length) {
-                        const isTerminal = (b.generation >= 6);
-                        
-                        staticBranches.push({
-                            startX: b.startX, startY: b.startY,
-                            endX: endX, endY: endY,
-                            thickness: b.thickness,
-                            hasLeaves: isTerminal
-                        });
+                    if (b.progress < 1) {
+                        nextQueue.push(b);
+                    } else {
+                        // Finished growing! Move to static list
+                        staticBranches.push({ x1: b.x1, y1: b.y1, x2: x2, y2: y2, thickness: b.thickness });
 
-                     if (!isTerminal) {
-    const subBranches = 3 + Math.floor(Math.random() * 2);
-    for (let j = 0; j < subBranches; j++) {
-        // 1. Distribute the angles evenly between left and right so it stays balanced
-        let angleOffset = 0;
-        if (subBranches > 1) {
-            angleOffset = ((j / (subBranches - 1)) * 1.3) - 0.65; 
-        }
-        
-        // 2. Combine the uniform spread with just a tiny bit of random variation
-        const nextAngle = b.angle + angleOffset + (Math.random() * 0.15 - 0.075);
-        
-        // 3. Make lengths fixed/consistent so one side doesn't grow longer than the other
-        const nextLength = b.length * 0.78;
-        const nextThickness = b.thickness * 0.75;
+                        // Spawn children nodes if structure complexity limits are ok
+                        if (b.generation < 5) {
+                            const childrenCount = 2 + Math.floor(Math.random() * 2);
+                            for (let i = 0; i < childrenCount; i++) {
+                                // Spread angles naturally outward
+                                const angleOffset = (Math.random() * 0.6) - 0.3;
+                                const baseAngle = b.angle + (i === 0 ? -0.4 : i === 1 ? 0.4 : angleOffset);
+                                
                                 nextQueue.push({
-                                    startX: endX, startY: endY,
-                                    angle: nextAngle,
-                                    length: nextLength,
-                                    thickness: Math.max(nextThickness, 1.5),
-                                    generation: b.generation + 1,
-                                    progress: 0
+                                    x1: x2, y1: y2,
+                                    angle: baseAngle,
+                                    length: b.length * (0.68 + Math.random() * 0.15),
+                                    thickness: Math.max(1.5, b.thickness * 0.65),
+                                    progress: 0,
+                                    generation: b.generation + 1
+                                });
+                            }
+                        } else {
+                            // Max depth limits hit, treat tip endpoints as blossom node seeds
+                            if (Math.random() < 0.65) {
+                                canvasLilies.push({ x: x2, y: y2, scale: 0.3 + Math.random() * 0.4, alpha: 0 });
+                            }
+                            if (Math.random() < 0.8) {
+                                canvasHearts.push({
+                                    x: x2, y: y2,
+                                    size: 6 + Math.random() * 10,
+                                    alpha: 0,
+                                    driftX: (Math.random() * 1) - 0.5,
+                                    driftY: -(0.4 + Math.random() * 0.8)
                                 });
                             }
                         }
-                    } else {
-                        nextQueue.push(b);
                     }
                 });
-
                 branchQueue = nextQueue;
-            }
 
-            loveTreeAnimId = requestAnimationFrame(() => runTreeLoop(ctx, w, h));
+                // 3. Render growing lily flowers onto tip coordinate nodes
+                canvasLilies.forEach(l => {
+                    if (l.alpha < 1) l.alpha += 0.02;
+                    ctx.save();
+                    ctx.globalAlpha = l.alpha;
+                    // Draw centered flower assets natively
+                    const size = 45 * l.scale;
+                    ctx.drawImage(lilyImage, l.x - size / 2, l.y - size / 2, size, size);
+                    ctx.restore();
+                });
+
+                // 4. Render and update floating heart particle nodes
+                canvasHearts.forEach(h => {
+                    if (h.alpha < 0.95) h.alpha += 0.03;
+                    
+                    // Apply physics shifts to floating items
+                    h.x += h.driftX;
+                    h.y += h.driftY;
+
+                    ctx.save();
+                    ctx.globalAlpha = h.alpha;
+                    ctx.fillStyle = 'rgba(255, 77, 109, 0.7)';
+                    
+                    // Classic canvas path vector geometry equations for tiny hearts
+                    ctx.beginPath();
+                    ctx.moveTo(h.x, h.y);
+                    ctx.bezierCurveTo(h.x - h.size / 2, h.y - h.size / 2, h.x - h.size, h.y + h.size / 3, h.x, h.y + h.size);
+                    ctx.bezierCurveTo(h.x + h.size, h.y + h.size / 3, h.x + h.size / 2, h.y - h.size / 2, h.x, h.y);
+                    ctx.fill();
+                    ctx.restore();
+                });
+
+                loveTreeAnimId = requestAnimationFrame(frameUpdate);
+            }
+            frameUpdate();
         }
     </script>
 </body>
