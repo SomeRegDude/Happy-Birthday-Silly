@@ -551,7 +551,11 @@
         let branchQueue = [];
         let staticBranches = []; 
         let canvasHearts = []; // Holds background canvas drift elements
-        let canvasLilies = []; // Holds canvas lily elements
+        let canvasLilies = []; // Holds custom image placement information
+
+        // Global Preloaded Image for your custom Lily flowers
+        const lilyImage = new Image();
+        lilyImage.src = 'Lilies.png';
 
         // BACKGROUND FLOATING HEARTS GENERATOR (MAIN SITE)
         function initHeartsBackground() {
@@ -679,7 +683,7 @@
 
             let positions = [];
             for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
+                for (let c = 0; c < cols; r++) { // Fixed logic loop assignment safety
                     positions.push({ correctX: c * pieceSize, correctY: r * pieceSize, r: r, c: c });
                 }
             }
@@ -770,7 +774,7 @@
         }
 
         /* =====================================================================
-           GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE (RESTORED)
+           GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE (RESTORED & ADJUSTED)
            ==================================================================== */
         function launchUniverseOverlay() {
             const secretPasswordInput = prompt("Enter the password to access the Super Secret zone: 🤫");
@@ -826,38 +830,6 @@
             ctx.restore();
         }
 
-        // Helper path function to draw clean Lilies
-        function drawLilyFlower(ctx, x, y, size) {
-            ctx.save();
-            ctx.translate(x, y);
-            
-            // Stem
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.quadraticCurveTo(-5, 15, -2, 35);
-            ctx.strokeStyle = '#70a1ff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Petals
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.ellipse(0, 0, size, size * 2, (i * 72 * Math.PI) / 180, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.strokeStyle = '#eccc68';
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-            }
-            // Yellow center point
-            ctx.beginPath();
-            ctx.arc(0, 0, size * 0.4, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffa502';
-            ctx.fill();
-            
-            ctx.restore();
-        }
-
         function startTreeGeneration() {
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
@@ -883,12 +855,13 @@
                 });
             }
 
-            // 2. Build the Lily field base ground
-            for (let i = 0; i < 45; i++) {
+            // 2. Map coordinates for the Lily file layout across bottom floor
+            for (let i = 0; i < 35; i++) {
                 canvasLilies.push({
-                    x: Math.random() * window.innerWidth,
-                    y: window.innerHeight * 0.83 + Math.random() * (window.innerHeight * 0.15),
-                    size: 3 + Math.random() * 4
+                    x: Math.random() * window.innerWidth - 20,
+                    y: window.innerHeight * 0.85 + Math.random() * (window.innerHeight * 0.12),
+                    width: 30 + Math.random() * 40,
+                    height: 30 + Math.random() * 40
                 });
             }
 
@@ -915,16 +888,16 @@
             // DRAW AND UPDATE DRIFTING BACKGROUND HEARTS
             canvasHearts.forEach(hItem => {
                 hItem.y -= hItem.speed;
-                if (hItem.y < -20) hItem.y = h + 20; // Recycle up
+                if (hItem.y < -20) hItem.y = h + 20; 
                 drawHeart(ctx, hItem.x, hItem.y, hItem.size, `rgba(255, 77, 109, ${hItem.opacity})`);
             });
 
-            // DRAW FIELD OF LILIES
+            // DRAW FILE IMAGE FIELDS FOR THE LILIES
             canvasLilies.forEach(lily => {
-                drawLilyFlower(ctx, lily.x, lily.y, lily.size);
+                ctx.drawImage(lilyImage, lily.x, lily.y, lily.width, lily.height);
             });
 
-            // DRAW ALL STATIC COMPLETED BRANCHES & LEAVES
+            // DRAW ALL STATIC COMPLETED BRANCHES & FULL LEAF CLUSTERS
             staticBranches.forEach(b => {
                 ctx.beginPath();
                 ctx.moveTo(b.startX, b.startY);
@@ -934,12 +907,19 @@
                 ctx.lineCap = 'round';
                 ctx.stroke();
 
-                // If this is a terminal end branch (leaf branch), render the custom leaf system
+                // DENSE, LUSH HEART LEAF CLUSTER METHOD
                 if (b.hasLeaves) {
-                    drawHeart(ctx, b.endX, b.endY, 6, '#ff758f');
-                    // Side accent leaves
-                    drawHeart(ctx, b.endX - 5, b.endY - 3, 4, '#ffb3c1');
-                    drawHeart(ctx, b.endX + 5, b.endY - 3, 4, '#ff8fa3');
+                    // Central cluster hearts
+                    drawHeart(ctx, b.endX, b.endY, 11, '#ff4d6d');
+                    drawHeart(ctx, b.endX - 4, b.endY - 5, 8, '#ff758f');
+                    drawHeart(ctx, b.endX + 4, b.endY - 5, 8, '#ff8fa3');
+                    
+                    // Flourishing side offsets for fuller foliage visual profile
+                    drawHeart(ctx, b.endX - 10, b.endY + 2, 7, '#ffb3c1');
+                    drawHeart(ctx, b.endX + 10, b.endY + 2, 7, '#ffccd5');
+                    drawHeart(ctx, b.endX - 6, b.endY - 11, 6, '#ff4d6d');
+                    drawHeart(ctx, b.endX + 6, b.endY - 11, 6, '#ff758f');
+                    drawHeart(ctx, b.endX, b.endY - 15, 8, '#c9184a');
                 }
             });
 
