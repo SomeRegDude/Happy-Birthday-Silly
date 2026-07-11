@@ -915,8 +915,8 @@
                     drawHeart(ctx, b.endX + 4, b.endY - 5, 8, '#ff8fa3');
                     
                     // Flourishing side offsets for fuller foliage visual profile
-                    drawHeart(ctx, b.endX - 10, b.endY + 2, 7, '#ffb3c1');
-                    drawHeart(ctx, b.endX + 10, b.endY + 2, 7, '#ffccd5');
+                    drawHeart(ctx, b.endX - 15, b.endY + 4, 7, '#ffb3c1');
+                    drawHeart(ctx, b.endX + 10, b.endY + 4, 7, '#ffccd5');
                     drawHeart(ctx, b.endX - 6, b.endY - 11, 6, '#ff4d6d');
                     drawHeart(ctx, b.endX + 6, b.endY - 11, 6, '#ff758f');
                     drawHeart(ctx, b.endX, b.endY - 15, 8, '#c9184a');
@@ -943,7 +943,7 @@
                     ctx.stroke();
 
                     if (b.progress >= b.length) {
-                        const isTerminal = (b.generation >= 5);
+                        const isTerminal = (b.generation >= 6);
                         
                         staticBranches.push({
                             startX: b.startX, startY: b.startY,
@@ -953,7 +953,7 @@
                         });
 
                         if (!isTerminal) {
-                            const subBranches = 2 + Math.floor(Math.random() * 2);
+                            const subBranches = 4 + Math.floor(Math.random() * 2);
                             for (let j = 0; j < subBranches; j++) {
                                 const nextAngle = b.angle + (Math.random() * 0.8 - 0.4);
                                 const nextLength = b.length * (0.7 + Math.random() * 0.15);
