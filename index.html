@@ -433,7 +433,7 @@
             <!-- Password locked envelope -->
             <div class="letter-envelope" onclick="togglePasswordGate()">🔒 Secret Letter #5 (Password Locked!)</div>
             <div id="letter5-gate" class="password-gate">
-                <input type="password" id="letter5-password" class="pw-input" placeholder="Enter secret code...">
+                <input type="password" id="letter5-password" class="pw-input" placeholder="Enter month/day/year...">
                 <button class="pw-btn" onclick="checkLetterPassword()">Unlock</button>
                 <p id="pw-error" style="color: red; font-size: 0.85rem; margin-top: 8px; display: none;">Wrong password, try again! 🤫</p>
             </div>
@@ -548,16 +548,8 @@
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
         let loveTreeAnimId = null;
-        const branchQueue = [];
-        const heartPetals = [];
-        const scatteredLilies = [];
-        const petalsTotal = 150;
-
-        // Image loading instantiation for your specific custom image file
-        const lilyImage = new Image();
-        lilyImage.src = 'Lilies.png'; 
-        let lilyImageLoaded = false;
-        lilyImage.onload = () => { lilyImageLoaded = true; };
+        let branchQueue = [];
+        let staticBranches = []; // Saves already drawn branches so they stay on screen
 
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
@@ -645,16 +637,15 @@
             document.getElementById('pw-error').style.display = "none";
         }
 
+        // Letter 5 unlocks using her birthday date format
         function checkLetterPassword() {
             const userInput = document.getElementById('letter5-password').value;
             const errorMsg = document.getElementById('pw-error');
             const letter = document.getElementById('letter5');
             const gate = document.getElementById('letter5-gate');
-            
-            // Password changed to "Star" as requested
-            const correctPassword = "Star"; 
 
-            if (userInput === correctPassword) {
+            // Matches your win message hint: month/day/year format
+            if (userInput === "07/11/2011" || userInput === "7/11/2011" || userInput === "07/11/11") {
                 gate.style.display = "none"; 
                 letter.style.display = "block"; 
                 errorMsg.style.display = "none";
@@ -780,8 +771,15 @@
 
         /* =====================================================================
            GROWING LOVE TREE SYSTEMS & CANVASES LAYER ENGINE
-           ===================================================================== */
+           ==================================================================== */
         function launchUniverseOverlay() {
+            // Password verification window assigned strictly to the button tab entry point
+            const secretPasswordInput = prompt("Enter the password to access the Super Secret zone: 🤫");
+            if (secretPasswordInput !== "star" && secretPasswordInput !== "Star") {
+                alert("Incorrect password! Try looking closely at clues or previous keys.");
+                return;
+            }
+
             const overlay = document.getElementById('universe-overlay');
             overlay.classList.add('active');
             document.getElementById('candle-gate').style.opacity = '1';
@@ -823,71 +821,94 @@
             canvas.height = window.innerHeight * dpr;
             ctx.scale(dpr, dpr);
 
-            branchQueue.length = 0;
-            heartPetals.length = 0;
-            scatteredLilies.length = 0;
+            branchQueue = [];
+            staticBranches = [];
 
             const startX = window.innerWidth / 2;
             const startY = window.innerHeight * 0.85;
             const initialLength = Math.min(window.innerHeight * 0.18, 120);
             
             branchQueue.push({
-                x: startX, y: startY,
+                startX: startX, startY: startY,
                 angle: -Math.PI / 2,
                 length: initialLength,
                 thickness: 12,
-                generation: 0
+                generation: 0,
+                progress: 0
             });
 
-            runTreeLoop(ctx, canvas.width/dpr, canvas.height/dpr);
+            if(loveTreeAnimId) cancelAnimationFrame(loveTreeAnimId);
+            runTreeLoop(ctx, window.innerWidth, window.innerHeight);
         }
 
         function runTreeLoop(ctx, w, h) {
             ctx.clearRect(0, 0, w, h);
             
-            // Draw existing static elements if required, but we regenerate dynamic structures nicely
-            // Grow branches sequentially
+            // Draw all completed permanent branches
+            staticBranches.forEach(b => {
+                ctx.beginPath();
+                ctx.moveTo(b.startX, b.startY);
+                ctx.lineTo(b.endX, b.endY);
+                ctx.strokeStyle = '#5c3d46';
+                ctx.lineWidth = b.thickness;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            });
+
+            // Process currently growing branches
             if (branchQueue.length > 0) {
-                const branchesToProcess = Math.min(branchQueue.length, 3);
-                for (let i = 0; i < branchesToProcess; i++) {
-                    const b = branchQueue.shift();
-                    drawBranchNode(ctx, b);
-                }
+                let nextQueue = [];
+
+                branchQueue.forEach(b => {
+                    b.progress += 4; // Growth iteration speed offset rate
+                    if (b.progress > b.length) b.progress = b.length;
+
+                    const endX = b.startX + Math.cos(b.angle) * b.progress;
+                    const endY = b.startY + Math.sin(b.angle) * b.progress;
+
+                    ctx.beginPath();
+                    ctx.moveTo(b.startX, b.startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = '#5c3d46';
+                    ctx.lineWidth = b.thickness;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+
+                    if (b.progress >= b.length) {
+                        // Complete branch, push to permanent array stack
+                        staticBranches.push({
+                            startX: b.startX, startY: b.startY,
+                            endX: endX, endY: endY,
+                            thickness: b.thickness
+                        });
+
+                        // Spawn children nodes if depth capacity isn't reached
+                        if (b.generation < 6) {
+                            const subBranches = 2 + Math.floor(Math.random() * 2);
+                            for (let j = 0; j < subBranches; j++) {
+                                const nextAngle = b.angle + (Math.random() * 0.8 - 0.4);
+                                const nextLength = b.length * (0.7 + Math.random() * 0.15);
+                                const nextThickness = b.thickness * 0.7;
+                                
+                                nextQueue.push({
+                                    startX: endX, startY: endY,
+                                    angle: nextAngle,
+                                    length: nextLength,
+                                    thickness: Math.max(nextThickness, 1.5),
+                                    generation: b.generation + 1,
+                                    progress: 0
+                                });
+                            }
+                        }
+                    } else {
+                        nextQueue.push(b);
+                    }
+                });
+
+                branchQueue = nextQueue;
             }
 
-            // Draw fallen structural systems
-            // Request loop frame safely
             loveTreeAnimId = requestAnimationFrame(() => runTreeLoop(ctx, w, h));
-        }
-
-        function drawBranchNode(ctx, b) {
-            const endX = b.x + Math.cos(b.angle) * b.length;
-            const endY = b.y + Math.sin(b.angle) * b.length;
-
-            ctx.beginPath();
-            ctx.moveTo(b.x, b.y);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = '#5c3d46';
-            ctx.lineWidth = b.thickness;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-
-            if (b.generation < 9) {
-                const subBranches = 2 + Math.floor(Math.random() * 2);
-                for (let j = 0; j < subBranches; j++) {
-                    const nextAngle = b.angle + (Math.random() * 0.7 - 0.35);
-                    const nextLength = b.length * (0.72 + Math.random() * 0.15);
-                    const nextThickness = b.thickness * 0.68;
-                    
-                    branchQueue.push({
-                        x: endX, y: endY,
-                        angle: nextAngle,
-                        length: nextLength,
-                        thickness: Math.max(nextThickness, 1),
-                        generation: b.generation + 1
-                    });
-                }
-            }
         }
     </script>
 </body>
