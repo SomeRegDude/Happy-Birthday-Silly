@@ -951,13 +951,21 @@
                             hasLeaves: isTerminal
                         });
 
-                        if (!isTerminal) {
-                            const subBranches = 3 + Math.floor(Math.random() * 2);
-                            for (let j = 0; j < subBranches; j++) {
-                                const nextAngle = b.angle + (Math.random() * 1.4 - 0.75);
-                                const nextLength = b.length * (0.77 + Math.random() * 0.11);
-                                const nextThickness = b.thickness * 0.75;
-                                
+                     if (!isTerminal) {
+    const subBranches = 3 + Math.floor(Math.random() * 2);
+    for (let j = 0; j < subBranches; j++) {
+        // 1. Distribute the angles evenly between left and right so it stays balanced
+        let angleOffset = 0;
+        if (subBranches > 1) {
+            angleOffset = ((j / (subBranches - 1)) * 1.3) - 0.65; 
+        }
+        
+        // 2. Combine the uniform spread with just a tiny bit of random variation
+        const nextAngle = b.angle + angleOffset + (Math.random() * 0.15 - 0.075);
+        
+        // 3. Make lengths fixed/consistent so one side doesn't grow longer than the other
+        const nextLength = b.length * 0.78;
+        const nextThickness = b.thickness * 0.75;
                                 nextQueue.push({
                                     startX: endX, startY: endY,
                                     angle: nextAngle,
