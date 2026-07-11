@@ -519,7 +519,7 @@
     </div>
 
     <!-- =====================================================================
-       5. THE SUPER SECRET VIEW: CANDLE GATE + PULSING HEART UNIVERSE
+       5. THE SUPER SECRET VIEW: CANDLE GATE + GROWING TREE & HEART LEAVES UNIVERSE
        ===================================================================== -->
     <div id="universe-overlay">
         <button class="back-to-site-btn" onclick="exitUniverseOverlay()">← Go Back</button>
@@ -548,10 +548,15 @@
     <!-- JAVASCRIPT SYSTEM ENGINE -->
     <script>
         let loveTreeAnimId = null;
-        const heartParticles = [];
-        const lilies = [];
+        const branchQueues = [];
+        const heartLeaves = [];
+        const floorLilies = [];
         let isUniverseRunning = false;
-        let pulseHeartTime = 0;
+        let pulseTime = 0;
+
+        // Custom PNG Image Object Setup
+        const lilyImg = new Image();
+        lilyImg.src = 'lilies.png';
 
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
@@ -753,7 +758,7 @@
         }
 
         // =====================================================================
-        // ADVANCED CANDLE AND PARTICLES TIMING ENGINE
+        // UNIVERSE GENERATION LIBRARIES: GROWING BRANCHES & HEART LEAVES
         // =====================================================================
         function launchUniverseOverlay() {
             document.getElementById('universe-overlay').classList.add('active');
@@ -785,7 +790,7 @@
             document.getElementById('universe-text').style.display = 'block';
 
             setTimeout(() => {
-                initUniverseHeart();
+                initUniverseTree();
             }, 600);
         }
 
@@ -798,48 +803,37 @@
             }
         }
 
-        function initUniverseHeart() {
+        function initUniverseTree() {
             const canvas = document.getElementById('loveTreeCanvas');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             
-            heartParticles.length = 0;
-            lilies.length = 0;
-            pulseHeartTime = 0;
+            branchQueues.length = 0;
+            heartLeaves.length = 0;
+            floorLilies.length = 0;
+            pulseTime = 0;
 
-            // Generate particles targeted at parametric heart mathematical plot points
-            const totalParticles = 280;
-            for (let i = 0; i < totalParticles; i++) {
-                // Angle stepping along the mathematical heart curve
-                const angleStep = (i / totalParticles) * Math.PI * 2;
-                
-                // Classic parametric heart equations
-                const targetX = 16 * Math.pow(Math.sin(angleStep), 3);
-                const targetY = -(13 * Math.cos(angleStep) - 5 * Math.cos(2 * angleStep) - 2 * Math.cos(3 * angleStep) - Math.cos(4 * angleStep));
+            // 1. Queue up the initial trunk segment base right at the center bottom floor line
+            branchQueues.push({
+                startX: canvas.width / 2,
+                startY: canvas.height - 10,
+                angle: -Math.PI / 2,
+                length: 22,
+                branchWidth: 14,
+                generation: 0,
+                progress: 0,
+                speed: 0.8
+            });
 
-                heartParticles.push({
-                    // Start exploded out randomly all over the viewports
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    // Targeted offsets from central core position anchor points
-                    hx: targetX,
-                    hy: targetY,
-                    size: 4 + Math.random() * 5,
-                    speed: 0.03 + Math.random() * 0.04,
-                    color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
-                    alpha: 0.4 + Math.random() * 0.6,
-                    seed: Math.random() * 100
-                });
-            }
-
-            // Seed lily coordinates on the baseline ground floor boundary line
-            const lilyCount = 14;
+            // 2. Queue up scattered PNG lilies across the bottom alignment frame boundaries
+            const lilyCount = 12;
             for(let i = 0; i < lilyCount; i++) {
-                lilies.push({
-                    x: 60 + Math.random() * (canvas.width - 120),
-                    y: canvas.height - 35 + (Math.random() * 15),
-                    scale: 0.6 + Math.random() * 0.5,
-                    alpha: 0 
+                floorLilies.push({
+                    x: 50 + Math.random() * (canvas.width - 100),
+                    y: canvas.height - 45 + (Math.random() * 20),
+                    width: 45 + Math.random() * 25,
+                    height: 45 + Math.random() * 25,
+                    alpha: 0
                 });
             }
 
@@ -853,36 +847,106 @@
             const canvas = document.getElementById('loveTreeCanvas');
             const ctx = canvas.getContext('2d');
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pulseTime += 0.04;
 
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2 - 20;
+            // Process expanding recursive growth segments dynamically
+            for (let i = branchQueues.length - 1; i >= 0; i--) {
+                const b = branchQueues[i];
+                b.progress += b.speed;
+                
+                // Calculate incremental drawing vector points
+                const currentLen = Math.min(b.progress, b.length);
+                const endX = b.startX + Math.cos(b.angle) * currentLen;
+                const endY = b.startY + Math.sin(b.angle) * currentLen;
 
-            // Compute dynamic pulsing zoom sizing factor
-            pulseHeartTime += 0.04;
-            const pulseFactor = 10 + Math.sin(pulseHeartTime) * 1.2;
+                ctx.strokeStyle = '#3a221d';
+                ctx.lineWidth = b.branchWidth;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(b.startX, b.startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
 
-            // 1. Draw + Assemble Particle Core Form Configurations
-            heartParticles.forEach(p => {
-                // Dynamic targeted final spot destination factoring the pulse scale calculation
-                const finalDestX = centerX + p.hx * pulseFactor;
-                const finalDestY = centerY + p.hy * pulseFactor;
+                // Branch segment reaches full execution growth length limits
+                if (b.progress >= b.length) {
+                    branchQueues.splice(i, 1);
 
-                // Move toward destination coordinates linearly over frames smoothly
-                p.x += (finalDestX - p.x) * p.speed;
-                p.y += (finalDestY - p.y) * p.speed;
+                    // If max branching complexity ceiling not reached, produce new forks
+                    if (b.generation < 9) {
+                        // Fork 1 (Left leaning shift coordinates)
+                        branchQueues.push({
+                            startX: endX,
+                            startY: endY,
+                            angle: b.angle - 0.22 - Math.random() * 0.25,
+                            length: b.length * (0.78 + Math.random() * 0.1),
+                            branchWidth: b.branchWidth * 0.72,
+                            generation: b.generation + 1,
+                            progress: 0,
+                            speed: b.speed * 0.95
+                        });
+                        // Fork 2 (Right leaning shift coordinates)
+                        branchQueues.push({
+                            startX: endX,
+                            startY: endY,
+                            angle: b.angle + 0.22 + Math.random() * 0.25,
+                            length: b.length * (0.78 + Math.random() * 0.1),
+                            branchWidth: b.branchWidth * 0.72,
+                            generation: b.generation + 1,
+                            progress: 0,
+                            speed: b.speed * 0.95
+                        });
 
-                // Inject miniature micro drift vibrations for natural visual organic feeling
-                const subtleDriftX = Math.sin(p.seed + pulseHeartTime) * 0.3;
-                const subtleDriftY = Math.cos(p.seed + pulseHeartTime) * 0.3;
+                        // Occasional middle cluster support extensions
+                        if(Math.random() > 0.65) {
+                            branchQueues.push({
+                                startX: endX,
+                                startY: endY,
+                                angle: b.angle + (Math.random() * 0.4 - 0.2),
+                                length: b.length * 0.6,
+                                branchWidth: b.branchWidth * 0.65,
+                                generation: b.generation + 1,
+                                progress: 0,
+                                speed: b.speed
+                            });
+                        }
+                    } else {
+                        // Terminal point reached: sprout heart foliage structural models here
+                        const leafCount = 3 + Math.floor(Math.random() * 4);
+                        for(let k = 0; k < leafCount; k++) {
+                            heartLeaves.push({
+                                cx: endX + (Math.random() * 30 - 15),
+                                cy: endY + (Math.random() * 30 - 15),
+                                baseSize: 5 + Math.random() * 7,
+                                color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
+                                scalePhase: Math.random() * Math.PI,
+                                currentScale: 0 // Starts hidden, scales in
+                            });
+                        }
+                    }
+                }
+            }
 
-                drawHeartShapePetal(ctx, p.x + subtleDriftX, p.y + subtleDriftY, p.size, p.color, p.alpha);
+            // Redraw background canopy dynamically over standard system layouts
+            heartLeaves.forEach(l => {
+                // Grow leaf into view initially
+                if (l.currentScale < 1) l.currentScale += 0.02;
+
+                // Combine baseline initialization size matrices with global pulse frequencies
+                const breathingFactor = 1 + Math.sin(pulseTime + l.scalePhase) * 0.15;
+                const activeDrawSize = l.baseSize * l.currentScale * breathingFactor;
+
+                drawHeartShapePetal(ctx, l.cx, l.cy, activeDrawSize, l.color, 0.85);
             });
 
-            // 2. Draw Lilies fading onto the Ground
-            lilies.forEach(l => {
-                if(l.alpha < 1) l.alpha += 0.01; 
-                drawLilyFlower(ctx, l.x, l.y, l.scale, l.alpha);
+            // Handle Custom PNG Ground Lilies Fading mechanics cleanly
+            floorLilies.forEach(lily => {
+                if (lily.alpha < 1) lily.alpha += 0.01;
+                
+                ctx.save();
+                ctx.globalAlpha = lily.alpha;
+                // Render the pre-loaded image resource directly to coordinate matrices
+                ctx.drawImage(lilyImg, lily.x, lily.y, lily.width, lily.height);
+                ctx.restore();
             });
 
             loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
@@ -897,41 +961,6 @@
             ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
             ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
             ctx.fill();
-            ctx.restore();
-        }
-
-        // LILY FLOWER DRAW ENGINE
-        function drawLilyFlower(ctx, cx, cy, scale, alpha) {
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            ctx.translate(cx, cy);
-            ctx.scale(scale, scale);
-
-            // Lily Pad Leaf Base
-            ctx.fillStyle = "#52b788";
-            ctx.beginPath();
-            ctx.arc(0, 4, 16, 0, Math.PI * 1.8);
-            ctx.lineTo(0, 4);
-            ctx.fill();
-
-            // Layered White Flower Petals
-            ctx.fillStyle = "#ffffff";
-            const petalCount = 8;
-            for (let i = 0; i < petalCount; i++) {
-                ctx.rotate((Math.PI * 2) / petalCount);
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.quadraticCurveTo(-5, -12, 0, -16);
-                ctx.quadraticCurveTo(5, -12, 0, 0);
-                ctx.fill();
-            }
-
-            // Stamen Center Crown
-            ctx.fillStyle = "#fee440";
-            ctx.beginPath();
-            ctx.arc(0, 0, 4, 0, Math.PI * 2);
-            ctx.fill();
-
             ctx.restore();
         }
 
