@@ -553,6 +553,12 @@
         const petalsTotal = 150;
         let bloomTriggered = false;
 
+        // Image loading instantiation for your specific custom image file
+        const lilyImage = new Image();
+        lilyImage.src = 'Lilies.png'; 
+        let lilyImageLoaded = false;
+        lilyImage.onload = () => { lilyImageLoaded = true; };
+
         // BACKGROUND FLOATING HEARTS GENERATOR
         function initHeartsBackground() {
             const container = document.getElementById('heartsContainer');
@@ -810,22 +816,20 @@
             bloomTriggered = false;
 
             // Define recursive branch structure parameters
-            // args: rootX, rootY, branchThick, branchLen, angle
             createForkStructure(canvas.width / 2, canvas.height, 12, 100, -Math.PI / 2, 0);
 
-            // Pre-seed background petal objects
+            // Pre-seed falling/drifting petal animations
             for (let i = 0; i < petalsTotal; i++) {
                 heartPetals.push({
                     x: Math.random() * canvas.width,
-                    y: (Math.random() * canvas.height * 0.7) - canvas.height, // Starts off-screen
-                    targetY: Math.random() * canvas.height * 0.85,
-                    size: 3 + Math.random() * 5,
-                    opacity: 0.1,
-                    targetOpacity: 0.3 + Math.random() * 0.5,
+                    y: Math.random() * canvas.height,
+                    size: 4 + Math.random() * 5,
+                    opacity: 0.2 + Math.random() * 0.6,
                     color: Math.random() > 0.4 ? '#ff4d6d' : '#ffb3c1',
-                    driftSpeed: 0.5 + Math.random() * 1.5,
+                    speedY: 0.5 + Math.random() * 1.5,
+                    speedX: (Math.random() - 0.5) * 1,
                     waveOffset: Math.random() * 100,
-                    state: 'waiting' // waiting, bloom, drift
+                    state: 'drift'
                 });
             }
 
@@ -834,9 +838,8 @@
 
         // Generate entire tree geometry into structure queue
         function createForkStructure(x, y, thick, len, angle, depth) {
-            if (depth > 11) return; // Recursion base case ceiling
+            if (depth > 11) return; 
 
-            // Coordinates for structural endpoint
             const x2 = x + Math.cos(angle) * len;
             const y2 = y + Math.sin(angle) * len;
 
@@ -848,22 +851,18 @@
                 angle: angle,
                 depth: depth,
                 processed: false,
-                drawProgress: 0 // Used for growing animation mechanics
+                drawProgress: 0 
             });
 
-            // If max depth ceiling not hit, fork off structural paths iteratively
             if (depth < 11) {
-                // Fork 1 (Left leaning shift)
                 createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle - (0.15 + Math.random() * 0.25), depth + 1);
-                // Fork 2 (Right leaning shift)
                 createForkStructure(x2, y2, thick * 0.8, len * 0.85, angle + (0.15 + Math.random() * 0.25), depth + 1);
                 
-                // Occasional procedural middle structural branch support
                 if(Math.random() > 0.7) {
                     createForkStructure(x2, y2, thick * 0.6, len * 0.6, angle + (Math.random() * 0.4 - 0.2), depth + 1);
                 }
             } else {
-                // Terminal point reached: Spawn Petals on terminal twigs
+                // Terminal point reached: Spawn stationary blooming leaves on branch tips
                 for (let k = 0; k < 6; k++) {
                     heartPetals.push({
                         cx: x2 + (Math.random() * 30 - 15),
@@ -874,7 +873,7 @@
                         color: Math.random() > 0.45 ? '#ff4d6d' : '#ffb3c1',
                         scale: 0.1,
                         targetScale: 1,
-                        state: 'waiting_bloom' // wait for terminal twig to grow
+                        state: 'waiting_bloom' 
                     });
                 }
             }
@@ -886,16 +885,20 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Handle Ground Imagery
-            const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 50);
-            groundGrad.addColorStop(0, '#52b788');
-            groundGrad.addColorStop(1, 'transparent');
-            ctx.fillStyle = groundGrad;
-            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-
-            // Pre-seed coordinates across ground floor alignment frame for procedural lilies
-            const lilyX = [60, 140, 250, 400, canvas.width - 200, canvas.width - 90];
-            lilyX.forEach(xPos => drawLilyFlower(ctx, xPos, canvas.height - 35, 1));
+            // RENDER LILIES.PNG IMAGE DIRECTLY ONTO BACKGROUND IF LOADED
+            if (lilyImageLoaded) {
+                // Draw image scaled nicely to fit the full width/height background
+                ctx.globalAlpha = 0.35; // Soft opacity so text/tree pops clearly
+                ctx.drawImage(lilyImage, 0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1.0;
+            } else {
+                // Fallback elegant field ground gradient if image is slow or missing
+                const groundGrad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 80);
+                groundGrad.addColorStop(0, '#fbc4b6');
+                groundGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = groundGrad;
+                ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+            }
 
             // Execute recursive branching growth pipeline step
             let stepExecuted = false;
@@ -903,26 +906,23 @@
             for (let i = 0; i < branchQueue.length; i++) {
                 const b = branchQueue[i];
                 if (!b.processed) {
-                    // Update structural rendering animation progres step matrices
                     if (b.drawProgress < b.length) {
-                        b.drawProgress += 1; // Growing speed constant
+                        b.drawProgress += 1.5; // Growing speed adjustments
                         stepExecuted = true;
                     } else {
                         b.drawProgress = b.length;
                         b.processed = true;
                     }
 
-                    // Process and draw the line based on structural progress vectors
-                    ctx.strokeStyle = '#3a221d'; // Bark tone color map
+                    ctx.strokeStyle = '#3a221d'; 
                     ctx.lineWidth = b.thickness;
                     ctx.lineCap = 'round';
                     ctx.beginPath();
                     ctx.moveTo(b.x1, b.y1);
-                    // Vectors update based on current partial length growth calculations
                     ctx.lineTo(b.x1 + Math.cos(b.angle) * b.drawProgress, b.y1 + Math.sin(b.angle) * b.drawProgress);
                     ctx.stroke();
                     stepsThisFrame++;
-                    if(stepsThisFrame > 15) break; // performance limit steps per frame
+                    if(stepsThisFrame > 15) break; 
                 }
             }
 
@@ -938,62 +938,35 @@
             if (!stepExecuted && !bloomTriggered && branchQueue.length > 0) {
                 if (branchQueue.every(b => b.processed)) {
                     bloomTriggered = true;
-                    console.log("Tree structure finalized. Foliage bloom engines engaged.");
                     heartPetals.forEach(p => {
                         if(p.state === 'waiting_bloom') p.state = 'bloom';
                     });
                 }
             }
 
-            // Draw Heart Shape Petals dynamic updates
+            // Draw and animate heart leaves / petals
             heartPetals.forEach(p => {
-                if(p.state === 'waiting' || p.state === 'waiting_bloom') return;
+                if(p.state === 'waiting_bloom') return;
 
                 if (p.state === 'bloom') {
-                    // Bloom/Growth scale update phase matrix calculations
                     if (p.scale < p.targetScale) p.scale += 0.05;
                     if (p.opacity < p.targetOpacity) p.opacity += 0.05;
-
                     drawHeartShapePetal(ctx, p.cx, p.cy, p.size * p.scale, p.color, p.opacity);
+                }
+
+                if (p.state === 'drift') {
+                    // Update falling coordinates loop smoothly
+                    p.y += p.speedY;
+                    p.x += p.speedX + Math.sin(p.y / 30 + p.waveOffset) * 0.5;
+                    if (p.y > canvas.height) {
+                        p.y = -20;
+                        p.x = Math.random() * canvas.width;
+                    }
+                    drawHeartShapePetal(ctx, p.x, p.y, p.size, p.color, p.opacity);
                 }
             });
 
             loveTreeAnimId = requestAnimationFrame(runUniverseEngineLoop);
-        }
-
-        // CUSTOM VECTOR MATHEMATICAL WATER LILY GRAPHICS
-        function drawLilyFlower(ctx, cx, cy, scale) {
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.scale(scale, scale);
-
-            // Draw green lily pad leaves base alignment frames
-            ctx.fillStyle = "#52b788";
-            ctx.beginPath();
-            ctx.arc(0, 4, 16, 0, Math.PI * 1.8);
-            ctx.lineTo(0, 4);
-            ctx.fill();
-
-            // Draw white layered lily petals using bezier coordinates
-            ctx.fillStyle = "#ffffff";
-            const petalCount = 8;
-            for (let i = 0; i < petalCount; i++) {
-                ctx.rotate((Math.PI * 2) / petalCount);
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                // args: cp1x, cp1y, cp2x, cp2y, x, y
-                ctx.quadraticCurveTo(-5, -12, 0, -16);
-                ctx.quadraticCurveTo(5, -12, 0, 0);
-                ctx.fill();
-            }
-
-            // Draw golden yellow stamen center crown vector
-            ctx.fillStyle = "#fee440";
-            ctx.beginPath();
-            ctx.arc(0, 0, 4, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.restore();
         }
 
         // CUSTOM VECTOR MATHEMATICAL HEART GRAPHICS
@@ -1003,8 +976,6 @@
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.moveTo(x, y);
-            // Draw smooth mathematical curve maps using recursive vector pathing arrays
-            // args: cp1x, cp1y, cp2x, cp2y, x, y
             ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
             ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
             ctx.fill();
@@ -1017,8 +988,6 @@
             if(canvas && document.getElementById('universe-overlay').classList.contains('active')) {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                // Since recursive growth geometry relies tightly on viewport dimensions matrix,
-                // we safely reset geometry to prevent off-screen mathematical drift errors.
                 exitUniverseOverlay();
                 launchUniverseOverlay();
             }
